@@ -1,10 +1,12 @@
-import * as constants from "./constants";
+const constants = require("./lib/constants.js");
+const maps = require("./lib/maps.js");
 
-// module.exports.orderTypeNamesMap = constants.orderTypeNamesMap;
+// module.exports.otherOrderTypesMap = constants.otherOrderTypesMap;
+// module.exports = {
+//   orderTypeNamesMap: constants.orderTypeNamesMap,
+// };
+
 module.exports = {
-  orderTypeNamesMap: constants.orderTypeNamesMap,
-  otherOrderTypesMap: constants.otherOrderTypesMap,
-  tenderTypeNamesMap: constants.tenderTypeNamesMap,
-  loyaltyType: constants.loyaltyType,
-  MAX_DISTANCE: constants.MAX_DISTANCE,
+  ...constants,
+  ...maps,
 };
