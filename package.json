@@ -5,5 +5,11 @@
   "main": "index.js",
   "author": "JC Harrington <jc@opentender.io> (https://www.opentender.io)",
   "license": "MIT",
-  "private": false
+  "private": true,
+  "homepage": "https://github.com/BetterBOH/open-tender-js",
+  "bugs": "https://github.com/BetterBOH/open-tender-js/issues",
+  "repository": {
+    "url": "https://github.com/BetterBOH/open-tender-js",
+    "type": "git"
+  }
 }
