@@ -34,8 +34,8 @@ export const makeAddress = (place) => {
   }
 }
 
-export const RADIUS_MILES = 3959 // radius of the earth in miles
-export const RADIUS_KM = 6371 // radius of the earth in kilometers
+const RADIUS_MILES = 3959 // radius of the earth in miles
+const RADIUS_KM = 6371 // radius of the earth in kilometers
 
 // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
 export const getDistance = (pointA, pointB, inMiles = true) => {
@@ -61,7 +61,7 @@ const deg2rad = (deg) => {
 
 // ray-casting algorithm based on
 // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-export const pointInPolygon = (point, vs) => {
+const pointInPolygon = (point, vs) => {
   var x = point[0],
     y = point[1]
   var inside = false
@@ -77,7 +77,7 @@ export const pointInPolygon = (point, vs) => {
   return inside
 }
 
-export const inZone = (address, polygon) => {
+const inZone = (address, polygon) => {
   const point = [address.lat, address.lng]
   return pointInPolygon(point, polygon)
 }
@@ -257,7 +257,7 @@ export const renameLocation = (str, names) => {
     .replace(' a u', ' an u')
 }
 
-const makeMapStyles = ({
+export const makeMapStyles = ({
   labelColor,
   roadColor,
   featureColor,
@@ -341,90 +341,3 @@ const makeMapStyles = ({
     stylers: [{ visibility: 'off' }],
   },
 ]
-
-export default makeMapStyles
-
-/* example Google Maps Place
-
-{
-  "address_components": [
-    {
-      "long_name": "150",
-      "short_name": "150",
-      "types": [
-        "street_number"
-      ]
-    },
-    {
-      "long_name": "East Huron Street",
-      "short_name": "E Huron St",
-      "types": [
-        "route"
-      ]
-    },
-    {
-      "long_name": "Streeterville",
-      "short_name": "Streeterville",
-      "types": [
-        "neighborhood",
-        "political"
-      ]
-    },
-    {
-      "long_name": "Chicago",
-      "short_name": "Chicago",
-      "types": [
-        "locality",
-        "political"
-      ]
-    },
-    {
-      "long_name": "Cook County",
-      "short_name": "Cook County",
-      "types": [
-        "administrative_area_level_2",
-        "political"
-      ]
-    },
-    {
-      "long_name": "Illinois",
-      "short_name": "IL",
-      "types": [
-        "administrative_area_level_1",
-        "political"
-      ]
-    },
-    {
-      "long_name": "United States",
-      "short_name": "US",
-      "types": [
-        "country",
-        "political"
-      ]
-    },
-    {
-      "long_name": "60611",
-      "short_name": "60611",
-      "types": [
-        "postal_code"
-      ]
-    }
-  ],
-  "formatted_address": "150 E Huron St, Chicago, IL 60611, USA",
-  "geometry": {
-    "location": {
-      "lat": 41.8950882,
-      "lng": -87.62325709999999
-    },
-    "viewport": {
-      "south": 41.8936716697085,
-      "west": -87.62463608029151,
-      "north": 41.8963696302915,
-      "east": -87.62193811970849
-    }
-  },
-  "place_id": "ChIJK3otrVTTD4gRNsbgQbBVYBw",
-  "html_attributions": []
-}
-
-*/

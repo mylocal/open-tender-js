@@ -1,14 +1,4 @@
-import { amex, discover, mastercard, visa, creditcard } from '../assets'
 import { isNum, isEmpty } from './helpers'
-
-// https://github.com/muffinresearch/payment-icons
-export const cardIcons = {
-  VISA: visa,
-  MC: mastercard,
-  DISC: discover,
-  AMEX: amex,
-  OTHER: creditcard,
-}
 
 export const cardNames = {
   VISA: 'Visa',
