@@ -126,7 +126,7 @@ export const makePickupRevenueCenters = (
 ) => {
   const hasPickup = revenueCenters
     .filter((i) => i.settings.service_types.includes('PICKUP'))
-    .filter((i) => i.distance === null || i.distance < maxDistance)
+    .filter((i) => !i.distance || i.distance < maxDistance)
   return sortRevenueCenters(hasPickup)
 }
 

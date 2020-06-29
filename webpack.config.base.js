@@ -13,10 +13,12 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: 'babel-loader',
       },
     ],
   },
+  // externals: {
+  //   'date-fns': 'date-fns',
+  //   'date-fns-tz': 'date-fns-tz',
+  // },
 }
