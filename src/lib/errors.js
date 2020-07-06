@@ -2,9 +2,13 @@ export const processError = (msg) => {
   if (!msg) return errMessages.unknown
   if (msg.includes('is a required property')) {
     return errMessages.requiredField
+  } else if (msg.includes("'' is too short")) {
+    return errMessages.requiredField
   } else if (msg.includes("not a 'email'")) {
     return errMessages.invalidEmail
   } else if (msg.includes("not a 'phone'")) {
+    return errMessages.invalidPhone
+  } else if (msg.includes("not a 'optional-phone'")) {
     return errMessages.invalidPhone
   } else if (msg.includes('invalid token')) {
     return errMessages.invalidToken
