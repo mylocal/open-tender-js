@@ -113,7 +113,7 @@ export const makeRevenueCenterMsg = (
     (statusMsg
       ? statusMsg.msg
       : 'This location is not currently accepting orders')
-  const className = orderMsg ? 'ot-success-color' : 'ot-alert-color'
+  const className = orderMsg ? 'ot-color-success' : 'ot-color-alert'
   return { message, className }
 }
 
