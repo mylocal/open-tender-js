@@ -1,6 +1,6 @@
 /dist/bundle_sizes.html
-/src
 /node_modules
+/src
 .babelrc
 .eslintignore
 .eslintrc.json
