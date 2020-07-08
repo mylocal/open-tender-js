@@ -1,11 +1,11 @@
 {
-  "name": "open-tender-js",
+  "name": "@open-tender/js",
   "version": "1.0.0",
   "description": "Various utility functions for working with the Open Tender API and building an e-commerce app.",
   "main": "dist/main.js",
   "author": "JC Harrington <jc@opentender.io> (https://www.opentender.io)",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "homepage": "https://github.com/BetterBOH/open-tender-js",
   "bugs": "https://github.com/BetterBOH/open-tender-js/issues",
   "repository": {
