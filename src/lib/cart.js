@@ -138,6 +138,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         imageUrl: o.small_image_url,
         allergens: convertStringToArray(o.allergens),
         tags: convertStringToArray(o.tags),
+        ingredients: o.ingredients,
         nutritionalInfo: o.nutritional_info,
         cals: o.nutritional_info
           ? parseInt(o.nutritional_info.calories) || null
@@ -195,6 +196,7 @@ export const makeOrderItem = (item, isEdit, soldOut = []) => {
     imageUrl: item.large_image_url,
     allergens: convertStringToArray(item.allergens),
     tags: convertStringToArray(item.tags),
+    ingredients: item.ingredients,
     nutritionalInfo: item.nutritional_info,
     cals: item.nutritional_info
       ? parseInt(item.nutritional_info.calories) || null
