@@ -555,15 +555,25 @@ export const validateCart = (cart, categories, soldOut) => {
       invalidOptions = []
     const newGroups = makeGroupsLookup(newItem)
     // check if any required groups for the new item are missing from the old item
-    const newRequiredGroups = Object.entries(newGroups).filter((i) => i.min > 0)
+    const newRequiredGroups = Object.values(newGroups).filter((i) => i.min > 0)
     const oldGroupIds = oldItem.groups.map((i) => i.id)
-    missingGroups = newRequiredGroups.map((i) => !oldGroupIds.includes(i.id))
+    missingGroups = newRequiredGroups.filter((i) => !oldGroupIds.includes(i.id))
+    const newEmptyGroups = Object.values(newGroups)
+      .filter((i) => {
+        return i.min === 0 && !oldGroupIds.includes(i.id)
+      })
+      .map((i) => ({ ...i, options: Object.values(i.options) }))
     const updatedGroups = oldItem.groups.map((group) => {
+      const optionCount = group.options.reduce((t, i) => (t += i.quantity), 0)
       const newGroup = newGroups[group.id]
       // check if option group is still part of the item
       if (!newGroup) {
-        invalidGroups.push(group)
-        return group
+        if (optionCount > 0) {
+          invalidGroups.push(group)
+          return group
+        } else {
+          return null
+        }
       } else {
         const updatedOptions = group.options.map((option) => {
           const newOption = newGroup.options[option.id]
@@ -592,7 +602,7 @@ export const validateCart = (cart, categories, soldOut) => {
             }
           }
         })
-        const optionCount = group.options.reduce((t, i) => (t += i.quantity), 0)
+
         // check to see if the option count is greater than the max (if one exists)
         // or less than the min (if one exists)
         if (
@@ -630,7 +640,12 @@ export const validateCart = (cart, categories, soldOut) => {
         invalidItems.append(oldItem)
         return null
       }
-      const updatedItem = { ...oldItem, groups: updatedGroups }
+      const nonNullGroups = updatedGroups.filter((i) => i !== null)
+      const allNewGroups = [...nonNullGroups, ...newEmptyGroups]
+      const updatedItem = {
+        ...oldItem,
+        groups: allNewGroups,
+      }
       // update the old item price to the new item price
       updatedItem.price = newItem.price
       const pricedItem = calcPrices(updatedItem)
