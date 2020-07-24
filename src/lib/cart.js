@@ -94,6 +94,12 @@ const makeOrderMsg = (firstTime, orderTime, tz, serviceType) => {
   return orderMsg
 }
 
+export const makeNotAcceptingOrdersMsg = (serviceType) => {
+  return `This location is not currently accepting ${serviceTypeNamesMap[
+    serviceType
+  ].toLowerCase()} orders. Please try switching to a different order type.`
+}
+
 export const makeRevenueCenterMsg = (
   revenueCenter,
   serviceType,
@@ -110,9 +116,7 @@ export const makeRevenueCenterMsg = (
       : null
   const message =
     orderMsg ||
-    (statusMsg
-      ? statusMsg.msg
-      : 'This location is not currently accepting orders')
+    (statusMsg ? statusMsg.msg : makeNotAcceptingOrdersMsg(serviceType))
   const className = orderMsg ? 'ot-color-success' : 'ot-color-alert'
   return { message, className }
 }
@@ -669,10 +673,6 @@ export const getDefaultTip = (config) => {
 
 export const prepareOrder = (data) => {
   data = data || {}
-  // const requestedIso =
-  //   !data.requestedAt || data.requestedAt === 'asap'
-  //     ? new Date().toISOString()
-  //     : data.requestedAt
   const requestedIso = !data.requestedAt ? 'asap' : data.requestedAt
   const order = {
     revenue_center_id: data.revenueCenterId || null,

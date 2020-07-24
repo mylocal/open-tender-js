@@ -83,8 +83,12 @@ export const isoToDateStr = (iso, tz, fmt = DATETIME) => {
   return format(isoToDate(iso, tz), fmt)
 }
 
+export const cleanISOString = (date) => {
+  return date.toISOString().split('.')[0] + 'Z'
+}
+
 export const dateToIso = (date, tz) => {
-  return zonedTimeToUtc(date, tz).toISOString()
+  return cleanISOString(zonedTimeToUtc(date, tz))
 }
 
 export const dateStrToDate = (str) => toDate(str)
@@ -125,7 +129,7 @@ export const makeReadableDateStrFromIso = (iso, tz, verbose = false) => {
 
 export const makeRequestedIso = (requestedAt) => {
   return !requestedAt || requestedAt === 'asap'
-    ? new Date().toISOString()
+    ? cleanISOString(new Date())
     : requestedAt
 }
 
@@ -340,7 +344,8 @@ export const makeFirstTime = (
   }
   const firstTime = first_times[serviceType]
   const firstDate = isoToDate(firstTime.utc, tz)
-  const hasAsap = firstTime.date === todayDate() && revenueCenterType === 'OLO'
+  // const hasAsap = firstTime.date === todayDate() && revenueCenterType === 'OLO'
+  const hasAsap = firstTime.has_asap
   if (requestedAt === 'asap' && hasAsap) {
     return 'asap'
   }
@@ -349,7 +354,6 @@ export const makeFirstTime = (
   if (requestedDate && requestedDate > firstDate) {
     return requestedAt
   }
-  // return hasAsap && firstDate > requestedDate ? 'asap' : firstTime.utc
   return firstTime.utc
 }
 
