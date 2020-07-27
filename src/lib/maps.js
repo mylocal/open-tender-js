@@ -130,6 +130,16 @@ export const makePickupRevenueCenters = (
   return sortRevenueCenters(hasPickup)
 }
 
+export const makeWalkinRevenueCenters = (
+  revenueCenters,
+  maxDistance = MAX_DISTANCE
+) => {
+  const hasWalkin = revenueCenters
+    .filter((i) => i.settings.service_types.includes('WALKIN'))
+    .filter((i) => !i.distance || i.distance < maxDistance)
+  return sortRevenueCenters(hasWalkin)
+}
+
 export const makeDeliveryRevenueCenters = (revenueCenters) => {
   const hasDelivery = revenueCenters.filter((i) =>
     i.settings.service_types.includes('DELIVERY')
@@ -169,6 +179,28 @@ export const makePickupMesssaging = (
   }
 }
 
+export const makeWalkinMessaging = (
+  address,
+  geoLatLng,
+  count,
+  minDistance,
+  maxDistance = MAX_DISTANCE,
+  messages = LOCATIONS_MESSAGES
+) => {
+  const { title, msg } = makePickupMesssaging(
+    address,
+    geoLatLng,
+    count,
+    minDistance,
+    maxDistance,
+    messages
+  )
+  return {
+    title: title.replace('pickup', 'dine-in'),
+    msg: msg.replace('pickup', 'dine-in'),
+  }
+}
+
 export const makeDeliveryMesssaging = (
   address,
   count,
@@ -189,6 +221,47 @@ export const makeDeliveryMesssaging = (
     } else {
       return messages.DELIVERY.noDelivery
     }
+  }
+}
+
+export const makeDisplayedRevenueCenters = (
+  revenueCenters,
+  serviceType,
+  address,
+  geoLatLng,
+  maxDistance
+) => {
+  if (serviceType === 'WALKIN') {
+    const displayed = makeWalkinRevenueCenters(revenueCenters)
+    const minDistance = calcMinDistance(displayed)
+    const count = displayed.length
+    const { title, msg } = makeWalkinMessaging(
+      address,
+      geoLatLng,
+      count,
+      minDistance,
+      maxDistance
+    )
+    const error = null
+    return { title, msg, error, displayed }
+  } else if (serviceType === 'PICKUP') {
+    const displayed = makePickupRevenueCenters(revenueCenters)
+    const minDistance = calcMinDistance(displayed)
+    const count = displayed.length
+    const { title, msg } = makePickupMesssaging(
+      address,
+      geoLatLng,
+      count,
+      minDistance,
+      maxDistance
+    )
+    const error = null
+    return { title, msg, error, displayed }
+  } else {
+    const displayed = makeDeliveryRevenueCenters(revenueCenters)
+    const count = displayed.length
+    const { title, msg, error } = makeDeliveryMesssaging(address, count)
+    return { title, msg, error, displayed }
   }
 }
 

@@ -1,9 +1,11 @@
 export const serviceTypeNamesMap = {
+  WALKIN: 'Dine-In',
   PICKUP: 'Pickup',
   DELIVERY: 'Delivery',
 }
 
 export const otherServiceTypeNamesMap = {
+  WALKIN: 'Delivery',
   PICKUP: 'Delivery',
   DELIVERY: 'Pickup',
 }
@@ -15,9 +17,11 @@ export const orderTypeNamesMap = {
 }
 
 export const otherOrderTypesMap = {
+  WALKIN: ['Delivery', 'Catering'],
   PICKUP: ['Delivery', 'Catering'],
   DELIVERY: ['Pickup', 'Catering'],
   CATERING: ['Pickup', 'Delivery'],
+  MERCH: ['Pickup', 'Delivery'],
 }
 
 export const tenderTypeNamesMap = {

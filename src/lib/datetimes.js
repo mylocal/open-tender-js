@@ -152,7 +152,8 @@ export const makeEstimatedTime = (
   )
     return null
   const { first_times } = revenueCenter.settings
-  const firstTime = first_times[serviceType]
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  const firstTime = first_times[st]
   if (firstTime.date === todayDate()) {
     return `around ${firstTime.time}`
   } else if (firstTime.date === tomorrowDate()) {
@@ -329,22 +330,16 @@ export const makeOrderTimes = (orderTimes, tz) => {
   return withDates.sort((a, b) => a.date - b.date)
 }
 
-export const makeFirstTime = (
-  settings,
-  tz,
-  serviceType,
-  revenueCenterType,
-  requestedAt
-) => {
+export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
   const { first_times, order_times } = settings
-  if (!first_times || !first_times[serviceType]) {
-    if (!order_times || !order_times[serviceType]) return null
-    const orderTimes = makeOrderTimes(order_times[serviceType], tz)
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  if (!first_times || !first_times[st]) {
+    if (!order_times || !order_times[st]) return null
+    const orderTimes = makeOrderTimes(order_times[st], tz)
     return orderTimes[0].iso
   }
-  const firstTime = first_times[serviceType]
+  const firstTime = first_times[st]
   const firstDate = isoToDate(firstTime.utc, tz)
-  // const hasAsap = firstTime.date === todayDate() && revenueCenterType === 'OLO'
   const hasAsap = firstTime.has_asap
   if (requestedAt === 'asap' && hasAsap) {
     return 'asap'
@@ -365,37 +360,15 @@ export const makeFirstRequestedAt = (
   const { timezone, settings, revenue_center_type } = revenueCenter
   const tz = timezoneMap[timezone]
   requestedAt = requestedAt || (revenue_center_type === 'OLO' ? 'asap' : null)
-  return makeFirstTime(
-    settings,
-    tz,
-    serviceType,
-    revenue_center_type,
-    requestedAt
-  )
+  return makeFirstTime(settings, tz, serviceType, requestedAt)
 }
 
 export const makeFirstTimes = (revenueCenter, serviceType, requestedAt) => {
-  const {
-    timezone,
-    settings,
-    revenue_center_type: revenueCenterType,
-  } = revenueCenter
+  const { timezone, settings } = revenueCenter
   const tz = timezoneMap[timezone]
-  const otherServiceType = serviceType === 'PICKUP' ? 'DELIVERY' : 'PICKUP'
-  const current = makeFirstTime(
-    settings,
-    tz,
-    serviceType,
-    revenueCenterType,
-    requestedAt
-  )
-  const other = makeFirstTime(
-    settings,
-    tz,
-    otherServiceType,
-    revenueCenterType,
-    requestedAt
-  )
+  const otherServiceType = serviceType === 'DELIVERY' ? 'PICKUP' : 'DELIVERY'
+  const current = makeFirstTime(settings, tz, serviceType, requestedAt)
+  const other = makeFirstTime(settings, tz, otherServiceType, requestedAt)
   if (!current && !other) return null
   return [
     current ? { serviceType: serviceType, requestedAt: current } : null,

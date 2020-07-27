@@ -4,6 +4,7 @@ import {
   makeOrderTimes,
   makeReadableDateStrFromIso,
 } from './datetimes'
+import { capitalize } from './helpers'
 
 export const displayPrice = (price) => {
   return parseFloat(price).toFixed(2)
@@ -77,6 +78,12 @@ export const makeServiceTypeName = (
   return serviceTypeName
 }
 
+export const makeOrderTypeName = (orderType, serviceType) => {
+  return orderType === 'OLO'
+    ? serviceTypeNamesMap[serviceType]
+    : capitalize(orderType)
+}
+
 const makeOrderMsg = (firstTime, orderTime, tz, serviceType) => {
   if (!firstTime && !orderTime) return null
   let firstIso
@@ -107,8 +114,9 @@ export const makeRevenueCenterMsg = (
 ) => {
   const { first_times, order_times } = revenueCenter.settings
   const tz = timezoneMap[revenueCenter.timezone]
-  const firstTime = first_times ? first_times[serviceType] : null
-  const orderTime = order_times ? order_times[serviceType] : null
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  const firstTime = first_times ? first_times[st] : null
+  const orderTime = order_times ? order_times[st] : null
   const statusMsg = statusMessages[revenueCenter.status]
   const orderMsg =
     !statusMsg && (firstTime || orderTime)
