@@ -230,7 +230,7 @@ export const time24ToDate = (str) => {
 
 export const time24ToDateStr = (str, fmt = TIME) => {
   const minutes = time24ToMinutes(str)
-  return format(minutesToDate(minutes), fmt)
+  return format(minutesToDate(minutes), fmt).replace(':00', '').toLowerCase()
 }
 
 export const minutesToDates = (minutes) => {
@@ -336,7 +336,10 @@ export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
   if (!first_times || !first_times[st]) {
     if (!order_times || !order_times[st]) return null
     const orderTimes = makeOrderTimes(order_times[st], tz)
-    return orderTimes[0].iso
+    const selected = requestedAt
+      ? orderTimes.find((i) => i.iso === requestedAt)
+      : null
+    return selected ? selected.iso : orderTimes[0].iso
   }
   const firstTime = first_times[st]
   const firstDate = isoToDate(firstTime.utc, tz)
