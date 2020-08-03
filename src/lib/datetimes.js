@@ -1,4 +1,4 @@
-import { parseISO, add } from 'date-fns'
+import { parseISO, add, sub, differenceInMinutes } from 'date-fns'
 import { format, toDate, zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
 
 /* CONSTANTS */
@@ -330,7 +330,13 @@ export const makeOrderTimes = (orderTimes, tz) => {
   return withDates.sort((a, b) => a.date - b.date)
 }
 
-export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
+export const makeFirstTime = (
+  settings,
+  tz,
+  serviceType,
+  requestedAt,
+  noAsap = false
+) => {
   const { first_times, order_times } = settings
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   if (!first_times || !first_times[st]) {
@@ -343,7 +349,7 @@ export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
   }
   const firstTime = first_times[st]
   const firstDate = isoToDate(firstTime.utc, tz)
-  const hasAsap = firstTime.has_asap
+  const hasAsap = firstTime.has_asap && !noAsap
   if (requestedAt === 'asap' && hasAsap) {
     return 'asap'
   }
@@ -358,12 +364,13 @@ export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
 export const makeFirstRequestedAt = (
   revenueCenter,
   serviceType,
-  requestedAt
+  requestedAt,
+  noAsap = false
 ) => {
   const { timezone, settings, revenue_center_type } = revenueCenter
   const tz = timezoneMap[timezone]
   requestedAt = requestedAt || (revenue_center_type === 'OLO' ? 'asap' : null)
-  return makeFirstTime(settings, tz, serviceType, requestedAt)
+  return makeFirstTime(settings, tz, serviceType, requestedAt, noAsap)
 }
 
 export const makeFirstTimes = (revenueCenter, serviceType, requestedAt) => {
@@ -378,4 +385,62 @@ export const makeFirstTimes = (revenueCenter, serviceType, requestedAt) => {
     other ? { serviceType: otherServiceType, requestedAt: other } : null,
   ]
   // return { [serviceType]: current, [otherServiceType]: other }
+}
+
+export const getNextInterval = (requestedAt, tz, interval) => {
+  const date = isoToDate(requestedAt, tz)
+  const intervals = interval === 15 ? [15, 30, 45, 60] : [30, 60]
+  const nextInterval = intervals.filter((i) => i > date.getMinutes())[0]
+  const hours = nextInterval === 60 ? date.getHours() + 1 : date.getHours()
+  const minutes = nextInterval === 60 ? 0 : nextInterval
+  date.setHours(hours)
+  date.setMinutes(minutes)
+  date.setSeconds(0)
+  date.setMilliseconds(0)
+  return date
+}
+
+export const adjustRequestedAt = (requestedAt, tz, interval, leadTime) => {
+  const nextDate = getNextInterval(requestedAt, tz, interval)
+  const adjusted = add(nextDate, { minutes: leadTime })
+  return dateToIso(adjusted, tz)
+}
+
+export const getFirstTime = (settings, serviceType) => {
+  const { first_times, order_times } = settings
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  if (!first_times || !first_times[st]) {
+    if (!order_times || !order_times[st]) return null
+    const orderTimes = makeOrderTimes(order_times[st], tz)
+    return orderTimes[0]
+  }
+  return first_times[st]
+}
+
+export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
+  const firstRequestedAt = makeFirstRequestedAt(
+    revenueCenter,
+    serviceType,
+    requestedAt,
+    true
+  )
+  const firstRequestedDate = parseISO(firstRequestedAt)
+  let prepTime = differenceInMinutes(firstRequestedDate, new Date())
+  prepTime = Math.ceil(prepTime / 5) * 5
+  const { settings, timezone } = revenueCenter
+  const tz = timezoneMap[timezone]
+  const firstTime = getFirstTime(settings, serviceType)
+  const interval = firstTime.interval || 15
+  const leadTime = 30
+  const adjusted = adjustRequestedAt(firstRequestedAt, tz, interval, leadTime)
+  const adjustedDate = isoToDate(adjusted, tz)
+  const cutoffDate = sub(adjustedDate, { minutes: prepTime + leadTime })
+  const cutoffIso = dateToIso(cutoffDate, tz)
+  return {
+    iso: adjusted,
+    date: adjustedDate,
+    dateStr: makeReadableDateStrFromIso(adjusted, tz, true),
+    cutoffDate,
+    cutoffDateStr: makeReadableDateStrFromIso(cutoffIso, tz, true),
+  }
 }
