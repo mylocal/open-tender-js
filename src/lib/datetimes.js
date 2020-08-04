@@ -392,8 +392,8 @@ export const makeFirstTimes = (revenueCenter, serviceType, requestedAt) => {
 
 export const getNextInterval = (requestedAt, tz, interval) => {
   const date = isoToDate(requestedAt, tz)
-  const intervals = interval === 15 ? [15, 30, 45, 60] : [30, 60]
-  const nextInterval = intervals.filter((i) => i > date.getMinutes())[0]
+  const intervals = interval === 15 ? [0, 15, 30, 45, 60] : [0, 30, 60]
+  const nextInterval = intervals.filter((i) => i >= date.getMinutes())[0]
   const hours = nextInterval === 60 ? date.getHours() + 1 : date.getHours()
   const minutes = nextInterval === 60 ? 0 : nextInterval
   date.setHours(hours)
@@ -423,45 +423,40 @@ export const getFirstTime = (settings, serviceType) => {
 export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
   const { settings, timezone } = revenueCenter
   const tz = timezoneMap[timezone]
-  const { first_times, order_times } = settings
+  const { first_times, order_times, wait_times } = settings
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   const firstTime = first_times && first_times[st] ? first_times[st] : null
   const orderTimes = order_times && order_times[st] ? order_times[st] : null
   if (!firstTime && !orderTimes) return {}
-  let adjustedIso, adjustedDate, cutoffDate
+  let adjustedIso, adjustedDate, cutoffDate, firstIso
   if (orderTimes) {
     const orderTime = findOrderTime(orderTimes, tz, requestedAt)
     adjustedIso = orderTime.iso
     adjustedDate = isoToDate(adjustedIso, tz)
     cutoffDate = orderTime.order_by.date
+    const allOrderTimes = makeOrderTimes(orderTimes, tz)
+    firstIso = allOrderTimes[0].iso
   } else {
-    const firstDate = isoToDate(firstTime.utc, tz)
-    let prepTime = differenceInMinutes(firstDate, new Date())
-    prepTime = Math.ceil(prepTime / 5) * 5
+    const prepTime = wait_times && wait_times[st] ? wait_times[st] : 0
     const interval = firstTime.interval || 15
     const leadTime = 30
-    const firstAvailableIso = adjustRequestedAt(
-      firstTime.utc,
-      tz,
-      interval,
-      leadTime
-    )
-    const firstAvailableDate = isoToDate(firstAvailableIso, tz)
+    firstIso = adjustRequestedAt(firstTime.utc, tz, interval, leadTime)
+    const firstDate = isoToDate(firstIso, tz)
     const requestedDate =
       requestedAt !== 'asap' ? isoToDate(requestedAt, tz) : null
     adjustedIso =
-      requestedDate && requestedDate > firstAvailableDate
-        ? requestedAt
-        : firstAvailableIso
+      requestedDate && requestedDate > firstDate ? requestedAt : firstIso
     adjustedDate = isoToDate(adjustedIso, tz)
     cutoffDate = sub(adjustedDate, { minutes: prepTime + leadTime })
   }
   const cutoffIso = dateToIso(cutoffDate, tz)
   return {
     isAdjusted: requestedAt !== adjustedIso,
+    firstIso,
     iso: adjustedIso,
     date: adjustedDate,
     dateStr: makeReadableDateStrFromIso(adjustedIso, tz, true),
+    cutoffIso,
     cutoffDate,
     cutoffDateStr: makeReadableDateStrFromIso(cutoffIso, tz, true),
   }
