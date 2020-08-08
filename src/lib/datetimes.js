@@ -37,6 +37,10 @@ export const makeWeekday = (date = new Date()) => {
   return format(date, 'EEEE').toUpperCase()
 }
 
+export const minutesLeft = (start, end) => {
+  return Math.max(differenceInMinutes(start, end), 0)
+}
+
 export const dateForWeekday = (weekday) => {
   const currentWeekday = makeWeekday()
   const currentIndex = weekdaysUpper.findIndex((i) => i === currentWeekday)
@@ -260,9 +264,9 @@ export const makeDatepickerArgs = (
   const minutes = requestedAtDate ? getMinutesfromDate(requestedAtDate) : null
   const isToday = dateStr === todayDate()
   /* if today, excluded all times before the first minute */
-  const todayExcludeded = isToday
-    ? [...range(0, firstTimes.minutes - interval, interval)]
-    : []
+  const lastTime =
+    Math.ceil((firstTimes.minutes - interval) / interval) * interval
+  const todayExcludeded = isToday ? [...range(0, lastTime, interval)] : []
   /* weekdayExcluded = times excluded based on regular hours + blocked hours */
   const weekdayExcluded = weekdayTimes[weekday] || []
   /* otherExcluded = times excluded due to holiday hours + throttled times */
@@ -423,8 +427,12 @@ export const getFirstTime = (settings, serviceType) => {
 export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
   const { settings, timezone } = revenueCenter
   const tz = timezoneMap[timezone]
-  const { first_times, order_times, wait_times } = settings
+  const { first_times, order_times, wait_times, group_ordering } = settings
+  const { prep_time, lead_time } = group_ordering
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  const waitTime = wait_times && wait_times[st] ? wait_times[st] : 0
+  const prepTime = waitTime + prep_time
+  if (requestedAt === 'asap') return { prepTime }
   const firstTime = first_times && first_times[st] ? first_times[st] : null
   const orderTimes = order_times && order_times[st] ? order_times[st] : null
   if (!firstTime && !orderTimes) return {}
@@ -437,9 +445,12 @@ export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
     const allOrderTimes = makeOrderTimes(orderTimes, tz)
     firstIso = allOrderTimes[0].iso
   } else {
-    const prepTime = wait_times && wait_times[st] ? wait_times[st] : 0
+    // first available time depends on both suggested lead time and extra prep time
+    // lead_time = how much time cart guests have to place their orders
+    // prep_time = how much extra prep time is required for group orders
+    // over and above the pickup or delivery wait time
+    const leadTime = prep_time + lead_time
     const interval = firstTime.interval || 15
-    const leadTime = 30
     firstIso = adjustRequestedAt(firstTime.utc, tz, interval, leadTime)
     const firstDate = isoToDate(firstIso, tz)
     const requestedDate =
@@ -447,7 +458,7 @@ export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
     adjustedIso =
       requestedDate && requestedDate > firstDate ? requestedAt : firstIso
     adjustedDate = isoToDate(adjustedIso, tz)
-    cutoffDate = sub(adjustedDate, { minutes: prepTime + leadTime })
+    cutoffDate = sub(adjustedDate, { minutes: prepTime })
   }
   const cutoffIso = dateToIso(cutoffDate, tz)
   return {
