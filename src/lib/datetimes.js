@@ -472,3 +472,15 @@ export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
     cutoffDateStr: makeReadableDateStrFromIso(cutoffIso, tz, true),
   }
 }
+
+export const formatTime = (time) => {
+  return time
+    ? time.replace('Today', 'today').replace('Tomorrow', 'tomorrow')
+    : ''
+}
+
+export const makeGroupOrderTimeStr = (iso, tz) => {
+  if (iso.toLowerCase() === 'asap') return 'ASAP'
+  const orderTime = iso && tz ? makeReadableDateStrFromIso(iso, tz, true) : null
+  return orderTime ? formatTime(orderTime) : null
+}
