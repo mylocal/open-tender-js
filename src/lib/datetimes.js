@@ -480,7 +480,7 @@ export const formatTime = (time) => {
 }
 
 export const makeGroupOrderTimeStr = (iso, tz) => {
-  if (iso.toLowerCase() === 'asap') return 'ASAP'
+  if (!iso || iso.toLowerCase() === 'asap') return 'ASAP'
   const orderTime = iso && tz ? makeReadableDateStrFromIso(iso, tz, true) : null
   return orderTime ? formatTime(orderTime) : null
 }

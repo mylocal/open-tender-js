@@ -195,7 +195,7 @@ export const calcPrices = (item) => {
   return { ...item, totalPrice: totalPrice, groups: groups }
 }
 
-export const makeOrderItem = (item, isEdit, soldOut = []) => {
+export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
   const groups = makeOrderItemGroups(item.option_groups, isEdit, soldOut)
   const orderItem = {
     id: item.id,
@@ -216,12 +216,17 @@ export const makeOrderItem = (item, isEdit, soldOut = []) => {
     max: item.max_quantity,
     min: item.min_quantity,
   }
+  if (simpleItem) {
+    const { cart_guest_id, customer_id } = simpleItem
+    if (cart_guest_id) orderItem.cart_guest_id = cart_guest_id
+    if (customer_id) orderItem.customer_id = customer_id
+  }
   const pricedItem = calcPrices(orderItem)
   return pricedItem
 }
 
 export const rehydrateOrderItem = (menuItem, simpleCartItem) => {
-  const orderItem = makeOrderItem(menuItem, true)
+  const orderItem = makeOrderItem(menuItem, true, [], simpleCartItem)
   orderItem.quantity = simpleCartItem.quantity || 1
   if (simpleCartItem.groups && simpleCartItem.groups.length) {
     const groupsLookup = makeGroupsLookup(simpleCartItem)
@@ -243,6 +248,7 @@ export const rehydrateCart = (menuItems, simpleCartItems) => {
   let orderItems = []
   simpleCartItems.forEach((item) => {
     const menuItem = menuItems.find((i) => i.id === item.id)
+    if (item.id === 3646) console.log(menuItem)
     if (menuItem) {
       const orderItem = rehydrateOrderItem(menuItem, item)
       orderItems.push(orderItem)
@@ -332,6 +338,28 @@ export const rehydrateCheckoutForm = (order) => {
     tip: order.totals.tip,
   }
   return form
+}
+
+// group orders
+
+export const makeGuestLookup = (cartGuests) => {
+  return cartGuests.reduce((obj, i) => ({ ...obj, [i.cart_guest_id]: i }), {})
+}
+
+export const combineCarts = (cart, guestCart, cartOwner, cartGuests) => {
+  const guestLookup = makeGuestLookup(cartGuests)
+  const withGuestNames = guestCart.map((i) => {
+    const guest = guestLookup[i.cart_guest_id]
+    return { ...i, madeFor: `${guest.first_name} ${guest.last_name}` }
+  })
+  const withOwnerName = cart.map((i) => {
+    return {
+      ...i,
+      customer_id: cartOwner.customer_id,
+      madeFor: `${cartOwner.first_name} ${cartOwner.last_name}`,
+    }
+  })
+  return [...withOwnerName, ...withGuestNames]
 }
 
 // display items from past orders
@@ -706,7 +734,6 @@ export const prepareOrder = (data) => {
     cart: data.cart ? makeSimpleCart(data.cart) : [],
   }
   if (data.customer) order.customer = data.customer
-  // if (data.details) order.details = data.details
   if (data.details) {
     const details = { ...data.details }
     // person_count must be submitted as integer
@@ -719,14 +746,9 @@ export const prepareOrder = (data) => {
   if (data.promoCodes) order.promo_codes = data.promoCodes
   if (data.tip) order.tip = data.tip
   if (data.tenders) order.tenders = data.tenders
-  // if (data.address) {
-  //   const address = { ...data.address }
-  //   if (address.lat) address.lat = parseFloat(address.lat.toFixed(7))
-  //   if (address.lng) address.lng = parseFloat(address.lng.toFixed(7))
-  //   order.address = { ...address }
-  // }
   if (data.address) order.address = data.address
   if (data.orderId) order.order_id = data.orderId
+  if (data.cartId) order.cart_id = data.cartId
   return order
 }
 
