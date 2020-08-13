@@ -3,6 +3,7 @@ import {
   timezoneMap,
   makeOrderTimes,
   makeReadableDateStrFromIso,
+  isoToDate,
 } from './datetimes'
 import { capitalize } from './helpers'
 
@@ -84,7 +85,14 @@ export const makeOrderTypeName = (orderType, serviceType) => {
     : capitalize(orderType)
 }
 
-const makeOrderMsg = (firstTime, orderTime, tz, serviceType) => {
+const makeOrderMsg = (
+  tz,
+  serviceType,
+  requestedAt,
+  firstTime,
+  orderTime,
+  waitTime
+) => {
   if (!firstTime && !orderTime) return null
   let firstIso
   if (firstTime) {
@@ -93,10 +101,16 @@ const makeOrderMsg = (firstTime, orderTime, tz, serviceType) => {
     const orderTimes = makeOrderTimes(orderTime, tz)
     firstIso = orderTimes[0].iso
   }
+  const seconds = firstIso ? isoToDate(firstIso).getSeconds() : 0
+  const estimate = requestedAt !== 'asap' && seconds ? 'at about' : 'at'
   const serviceTypeName = serviceTypeNamesMap[serviceType]
-  const readableDate = makeReadableDateStrFromIso(firstIso, tz, true)
-    .replace('Today', 'today')
-    .replace('Tomorrow', 'tomorrow')
+  const readableDate =
+    requestedAt === 'asap'
+      ? `in about ${waitTime} minutes`
+      : makeReadableDateStrFromIso(firstIso, tz, true)
+          .replace('Today', 'today')
+          .replace('Tomorrow', 'tomorrow')
+          .replace('@', estimate)
   const orderMsg = `The first available ${serviceTypeName.toLowerCase()} time is ${readableDate}`
   return orderMsg
 }
@@ -110,17 +124,26 @@ export const makeNotAcceptingOrdersMsg = (serviceType) => {
 export const makeRevenueCenterMsg = (
   revenueCenter,
   serviceType,
+  requestedAt,
   statusMessages
 ) => {
-  const { first_times, order_times } = revenueCenter.settings
+  const { first_times, order_times, wait_times } = revenueCenter.settings
   const tz = timezoneMap[revenueCenter.timezone]
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   const firstTime = first_times ? first_times[st] : null
   const orderTime = order_times ? order_times[st] : null
+  const waitTime = wait_times ? wait_times[st] : null
   const statusMsg = statusMessages[revenueCenter.status]
   const orderMsg =
     !statusMsg && (firstTime || orderTime)
-      ? makeOrderMsg(firstTime, orderTime, tz, serviceType)
+      ? makeOrderMsg(
+          tz,
+          serviceType,
+          requestedAt,
+          firstTime,
+          orderTime,
+          waitTime
+        )
       : null
   const message =
     orderMsg ||
