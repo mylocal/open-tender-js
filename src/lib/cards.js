@@ -68,10 +68,10 @@ export const validateCreditCard = (card, cardType) => {
 
   const acctLength = cardType === 'AMEX' ? 15 : 16
   acct = acct ? acct.replace(/\s/g, '') : ''
-  if (!isNum(acct)) {
-    errors.acct = 'Card number must be only numbers'
-  } else if (acct.length !== acctLength) {
+  if (acct.length !== acctLength) {
     errors.acct = `Card number must be ${acctLength} digits`
+  } else if (!isNum(acct)) {
+    errors.acct = 'Card number must be only numbers'
   }
 
   exp = (exp ? exp.replace(/\s/g, '') : '').padStart(4, '0')
@@ -87,17 +87,17 @@ export const validateCreditCard = (card, cardType) => {
 
   const cvvLength = cardType === 'AMEX' ? 4 : 3
   cvv = cvv ? cvv.replace(/\s/g, '') : ''
-  if (!isNum(cvv)) {
-    errors.cvv = 'CVV must be only numbers'
-  } else if (cvv.length !== cvvLength) {
+  if (cvv.length !== cvvLength) {
     errors.cvv = `CVV must be ${cvvLength} digits`
+  } else if (!isNum(cvv)) {
+    errors.cvv = 'CVV must be only numbers'
   }
 
   zip = zip ? zip.replace(/\s/g, '') : ''
-  if (!isNum(zip)) {
-    errors.zip = 'Zip code must be only numbers'
-  } else if (zip.length !== 5) {
+  if (zip.length !== 5) {
     errors.zip = 'Zip code must be 5 digits'
+  } else if (!isNum(zip)) {
+    errors.zip = 'Zip code must be only numbers'
   }
 
   if (!isEmpty(errors)) {
