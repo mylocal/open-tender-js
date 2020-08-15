@@ -223,6 +223,7 @@ export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
   const orderItem = {
     id: item.id,
     name: item.name,
+    category: item.category_name,
     description: item.description,
     imageUrl: item.large_image_url,
     allergens: convertStringToArray(item.allergens),
