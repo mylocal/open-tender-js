@@ -11,6 +11,20 @@ export const displayPrice = (price) => {
   return parseFloat(price).toFixed(2)
 }
 
+export const makeDisplayPrice = (item) => {
+  const price = parseFloat(item.price)
+  if (price > 0) return `$${displayPrice(item.price)}`
+  const sizeGroup = item.option_groups.find((i) => i.is_size)
+  if (sizeGroup) {
+    const prices = sizeGroup.option_items.map(
+      (i) => `$${displayPrice(i.price)}`
+    )
+    return prices.join(' / ')
+  } else {
+    return null
+  }
+}
+
 export const addCommas = (x, d) => {
   return x.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
