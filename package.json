@@ -1,6 +1,6 @@
 {
   "name": "@open-tender/js",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Various utility functions for building an Open Tender app",
   "main": "dist/main.js",
   "author": "JC Harrington <jc@opentender.io> (https://www.opentender.io)",
