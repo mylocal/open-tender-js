@@ -4,6 +4,8 @@ import {
   makeOrderTimes,
   makeReadableDateStrFromIso,
   isoToDate,
+  time24ToDate,
+  formatDateStr,
 } from './datetimes'
 import { capitalize } from './helpers'
 
@@ -108,23 +110,28 @@ const makeOrderMsg = (
   waitTime
 ) => {
   if (!firstTime && !orderTime) return null
-  let firstIso
+  let readableDate
   if (firstTime) {
-    firstIso = firstTime.utc
+    const seconds = firstTime.utc ? isoToDate(firstTime.utc).getSeconds() : 0
+    const estimate = requestedAt !== 'asap' && seconds ? 'at about' : 'at'
+    readableDate =
+      requestedAt === 'asap'
+        ? `in about ${waitTime} minutes`
+        : makeReadableDateStrFromIso(firstTime.utc, tz, true)
+            .replace('Today', 'today')
+            .replace('Tomorrow', 'tomorrow')
+            .replace('@', estimate)
   } else {
     const orderTimes = makeOrderTimes(orderTime, tz)
-    firstIso = orderTimes[0].iso
+    const { start_time, end_time } = orderTimes[0]
+    const startTime = time24ToDate(start_time)
+    const startTimeStr = formatDateStr(startTime, 'h:mma')
+    const endTime = time24ToDate(end_time)
+    const endTimeStr = formatDateStr(endTime, 'h:mma')
+    readableDate =
+      startTime === endTime ? startTimeStr : `${startTimeStr} to ${endTimeStr}`
   }
-  const seconds = firstIso ? isoToDate(firstIso).getSeconds() : 0
-  const estimate = requestedAt !== 'asap' && seconds ? 'at about' : 'at'
   const serviceTypeName = serviceTypeNamesMap[serviceType]
-  const readableDate =
-    requestedAt === 'asap'
-      ? `in about ${waitTime} minutes`
-      : makeReadableDateStrFromIso(firstIso, tz, true)
-          .replace('Today', 'today')
-          .replace('Tomorrow', 'tomorrow')
-          .replace('@', estimate)
   const orderMsg = `The first available ${serviceTypeName.toLowerCase()} time is ${readableDate}`
   return orderMsg
 }
