@@ -308,6 +308,11 @@ export const makeDatepickerArgs = (
   return { excludeTimes, isClosed, updatedDate, minDate, maxDate }
 }
 
+export const makeWeekdayIndices = (weekdays) => {
+  if (!weekdays) return []
+  return weekdays.map((weekday) => weekdaysUpper.indexOf(weekday))
+}
+
 export const makeOrderTimes = (orderTimes, tz) => {
   const currentDate = new Date()
   const withDates = orderTimes.map((i) => {
