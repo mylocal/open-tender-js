@@ -426,12 +426,14 @@ export const makeItemImageUrl = (images) => {
 }
 
 export const makeItemSignature = (item) => {
-  const optionIds = item.groups
-    .reduce((arr, group) => {
-      const ids = group.options.map((o) => o.id)
-      return [...arr, ...ids]
-    }, [])
-    .sort((a, b) => a - b)
+  const optionIds = !item.groups
+    ? []
+    : item.groups
+        .reduce((arr, group) => {
+          const ids = group.options.map((o) => o.id)
+          return [...arr, ...ids]
+        }, [])
+        .sort((a, b) => a - b)
   return [item.id, ...optionIds].join('.')
 }
 
