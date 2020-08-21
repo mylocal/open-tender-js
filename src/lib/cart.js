@@ -6,6 +6,7 @@ import {
   isoToDate,
   time24ToDate,
   formatDateStr,
+  makeWeekday,
 } from './datetimes'
 import { capitalize } from './helpers'
 
@@ -124,11 +125,18 @@ const makeOrderMsg = (
     const orderTimes = makeOrderTimes(orderTime, tz)
     const { start_time, end_time } = orderTimes[0]
     const startTime = time24ToDate(start_time)
-    const startTimeStr = formatDateStr(startTime, 'h:mma')
+    const startTimeStr = formatDateStr(startTime, 'h:mma').toLowerCase()
     const endTime = time24ToDate(end_time)
-    const endTimeStr = formatDateStr(endTime, 'h:mma')
+    const endTimeStr = formatDateStr(endTime, 'h:mma').toLowerCase()
+    const todayWeekday = makeWeekday()
+    const weekday =
+      orderTimes[0].weekday === todayWeekday
+        ? ''
+        : `${capitalize(orderTimes[0].weekday)} @ `
     readableDate =
-      startTime === endTime ? startTimeStr : `${startTimeStr} to ${endTimeStr}`
+      startTimeStr === endTimeStr
+        ? `${weekday}${startTimeStr}`
+        : `${weekday}${startTimeStr} to ${endTimeStr}`
   }
   const serviceTypeName = serviceTypeNamesMap[serviceType]
   const orderMsg = `The first available ${serviceTypeName.toLowerCase()} time is ${readableDate}`
