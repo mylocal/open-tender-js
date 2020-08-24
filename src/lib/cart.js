@@ -774,7 +774,7 @@ export const printCart = (cart) => {
 /* order submission */
 
 export const getDefaultTip = (config) => {
-  if (!config || !config.gratuity) return null
+  if (!config || !config.gratuity || !config.gratuity.has_tip) return null
   return config.gratuity.default ? config.gratuity.default.amount : null
 }
 
