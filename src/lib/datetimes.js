@@ -380,6 +380,7 @@ export const makeFirstRequestedAt = (
   requestedAt
 ) => {
   const { timezone, settings, revenue_center_type } = revenueCenter
+  if (revenue_center_type === 'POS') return 'asap'
   const tz = timezoneMap[timezone]
   requestedAt = requestedAt || (revenue_center_type === 'OLO' ? 'asap' : null)
   return makeFirstTime(settings, tz, serviceType, requestedAt)
