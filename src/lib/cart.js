@@ -43,9 +43,11 @@ export const formatDollars = (str, space = '') => {
 }
 
 const getItemOptions = (item) => {
-  return item.groups
+  if (!item.groups || !item.groups.length) return []
+  const options = item.groups
     .map((group) => group.options.filter((option) => option.quantity > 0))
-    .flat()
+    .reduce((arr, i) => [...arr, ...i], [])
+  return options
 }
 
 export const makeModifierNames = (item) => {
