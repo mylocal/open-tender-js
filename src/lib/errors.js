@@ -12,8 +12,9 @@ export const processError = (msg) => {
     return errMessages.invalidPhone
   } else if (msg.includes('invalid token')) {
     return errMessages.invalidToken
+  } else if (msg.includes("not a 'user-password'")) {
+    return errMessages.invalidPassword
   }
-
   return msg
 }
 
@@ -94,7 +95,8 @@ export const errMessages = {
   invalidHex: 'Enter as a hexidecimal color code',
   invalidZip: 'Enter a valid 5 digit zip code',
   invalidPhone: 'Invalid phone number',
-  invalidPassword: 'Invalid password. Please see notes below and try again.',
+  invalidPassword:
+    'Invalid password. Passwords must be at least 8 characters and include only letters and numbers and any of these special characters: !@#$%^&_-+=<>.',
   invalidToken:
     'Password reset token is invalid or expired. Please resubmit your password reset request via the login form.',
   requiredField: 'This field is required',
