@@ -18,14 +18,16 @@ export const makeAddress = (place) => {
     street_number,
     route,
     locality: city,
+    sublocality_level_1: subcity,
     administrative_area_level_1: state,
     postal_code: postalCode,
   } = components
   const streetNumber = street_number ? street_number.short_name : ''
   const street = route ? route.long_name : ''
+  const addressCity = city || subcity
   return {
     street: `${streetNumber} ${street}`.trim(),
-    city: city ? city.long_name : '',
+    city: addressCity ? addressCity.long_name : '',
     state: state ? state.short_name : '',
     postal_code: postalCode ? postalCode.short_name : '',
     lat: geometry.location.lat() || null,
