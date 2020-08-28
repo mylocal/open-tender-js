@@ -42,7 +42,7 @@ export const formatDollars = (str, space = '') => {
     : `$${addCommas(floatPrice, 2)}${space}`
 }
 
-const getItemOptions = (item) => {
+export const getItemOptions = (item) => {
   if (!item.groups || !item.groups.length) return []
   const options = item.groups
     .map((group) => group.options.filter((option) => option.quantity > 0))
@@ -195,6 +195,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
       const option = {
         id: o.id,
         name: o.name,
+        shortName: o.short_name,
         description: o.description,
         imageUrl: o.small_image_url,
         allergens: convertStringToArray(o.allergens),
@@ -253,6 +254,7 @@ export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
   const orderItem = {
     id: item.id,
     name: item.name,
+    shortName: item.short_name,
     category: item.category_name,
     description: item.description,
     imageUrl: item.large_image_url,
