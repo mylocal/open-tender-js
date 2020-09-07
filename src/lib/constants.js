@@ -39,3 +39,11 @@ export const loyaltyType = {
 }
 
 export const MAX_DISTANCE = 100
+
+export const prepStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
+  COMPLETED: 'COMPLETED',
+  FULFILLED: 'FULFILLED',
+}

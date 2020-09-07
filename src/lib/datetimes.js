@@ -71,6 +71,16 @@ export const makeLocalDate = (dateStr) => {
   return toDate(dateStr, { timezone: tz })
 }
 
+export const zonedTimeToDate = (str, timezone) => {
+  const tz = timezoneMap[timezone]
+  return toDate(str.split('.')[0], { timezone: tz })
+}
+
+export const zonedTimeToDateStr = (str, timezone, fmt = DATE) => {
+  const date = zonedTimeToDate(str, timezone)
+  return format(date, fmt)
+}
+
 // returns a date string in a user's local time
 export const makeLocalDateStr = (date, days = 0, fmt = DATE) => {
   return format(add(date || new Date(), { days: days }), fmt)
@@ -93,6 +103,16 @@ export const cleanISOString = (date) => {
 
 export const dateToIso = (date, tz) => {
   return cleanISOString(zonedTimeToUtc(date, tz))
+}
+
+export const adjustIso = (iso, tz, adjustment) => {
+  const date = isoToDate(iso, tz)
+  return dateToIso(add(date, adjustment), tz)
+}
+
+export const currentLocalDate = (tz) => {
+  const date = new Date()
+  return isoToDate(date.toISOString(), tz)
 }
 
 export const dateStrToDate = (str) => toDate(str)
