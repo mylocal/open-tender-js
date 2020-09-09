@@ -57,6 +57,8 @@ export const weekdayAndTimeToDate = (weekday, timeStr) => {
 
 /* HELPERS */
 
+export const parseIsoToDate = (iso) => parseISO(iso)
+
 // https://stackoverflow.com/questions/54555491/how-to-guess-users-timezone-using-date-fns-in-a-vuejs-app
 export const getUserTimezone = () => {
   try {
@@ -110,9 +112,35 @@ export const adjustIso = (iso, tz, adjustment) => {
   return dateToIso(add(date, adjustment), tz)
 }
 
+export const adjustZonedIso = (zonedIso, tz, adjustment) => {
+  const adjusted = add(toDate(zonedIso), adjustment)
+  const zoned = utcToZonedTime(adjusted, tz)
+  const dateStr = format(zoned, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: tz })
+  return dateStr
+}
+
+export const dateToZonedDateStr = (
+  date,
+  tz,
+  fmt = "yyyy-MM-dd'T'HH:mm:ssXXX"
+) => {
+  const zoned = utcToZonedTime(date, tz)
+  return format(zoned, fmt, { timeZone: tz })
+}
+
+export const dateToZonedIso = (date, tz) => {
+  const zoned = utcToZonedTime(date, tz)
+  return format(zoned, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: tz })
+}
+
 export const currentLocalDate = (tz) => {
   const date = new Date()
   return isoToDate(date.toISOString(), tz)
+}
+
+export const currentLocalDateStr = (tz, fmt = DATE) => {
+  const date = new Date()
+  return format(isoToDate(date.toISOString(), tz), fmt)
 }
 
 export const dateStrToDate = (str) => toDate(str)
