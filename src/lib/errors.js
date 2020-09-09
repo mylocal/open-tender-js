@@ -1,3 +1,10 @@
+export const handleRespError = (err) => {
+  const error = typeof err === 'string' ? { detail: err } : err
+  const { title = 'Something went wrong', detail, params } = error
+  const messages = params ? Object.entries(params || {}) : []
+  return { title, detail, messages, err }
+}
+
 export const processError = (msg) => {
   if (!msg) return errMessages.unknown
   if (msg.includes('is a required property')) {
