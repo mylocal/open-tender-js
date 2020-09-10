@@ -538,3 +538,15 @@ export const makeGroupOrderTimeStr = (iso, tz) => {
   const orderTime = iso && tz ? makeReadableDateStrFromIso(iso, tz, true) : null
   return orderTime ? formatTime(orderTime) : null
 }
+
+export const makeIntervals = (tz) => {
+  const nextInterval = getNextInterval(new Date().toISOString(), tz, 15)
+  let start = sub(nextInterval, { minutes: 15 })
+  let intervals = []
+  for (let step = 0; step < 12 * 4; step++) {
+    const end = add(start, { minutes: 15 })
+    intervals.push({ start, end, orders: [] })
+    start = end
+  }
+  return intervals
+}
