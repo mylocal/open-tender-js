@@ -304,7 +304,6 @@ export const rehydrateCart = (menuItems, simpleCartItems) => {
   let orderItems = []
   simpleCartItems.forEach((item) => {
     const menuItem = menuItems.find((i) => i.id === item.id)
-    if (item.id === 3646) console.log(menuItem)
     if (menuItem) {
       const orderItem = rehydrateOrderItem(menuItem, item)
       orderItems.push(orderItem)

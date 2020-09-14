@@ -541,9 +541,9 @@ export const makeGroupOrderTimeStr = (iso, tz) => {
 
 export const makeIntervals = (tz) => {
   const nextInterval = getNextInterval(new Date().toISOString(), tz, 15)
-  let start = sub(nextInterval, { minutes: 15 })
+  let start = sub(nextInterval, { minutes: 24 * 60 })
   let intervals = []
-  for (let step = 0; step < 12 * 4; step++) {
+  for (let step = 0; step < 48 * 4; step++) {
     const end = add(start, { minutes: 15 })
     intervals.push({ start, end, orders: [] })
     start = end
