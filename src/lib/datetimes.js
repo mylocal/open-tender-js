@@ -145,6 +145,10 @@ export const currentLocalDateStr = (tz, fmt = DATE) => {
 
 export const dateStrToDate = (str) => toDate(str)
 
+export const dateStrToZonedDate = (str, tz) => {
+  return toDate(str, { timeZone: tz })
+}
+
 export const formatDateStr = (str, fmt = HUMAN_DATE) => {
   return format(toDate(str), fmt)
 }
