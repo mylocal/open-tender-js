@@ -273,9 +273,11 @@ export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
     min: item.min_quantity,
   }
   if (simpleItem) {
-    const { cart_guest_id, customer_id } = simpleItem
+    const { cart_guest_id, customer_id, made_for, notes } = simpleItem
     if (cart_guest_id) orderItem.cart_guest_id = cart_guest_id
     if (customer_id) orderItem.customer_id = customer_id
+    if (made_for) orderItem.madeFor = made_for
+    if (notes) orderItem.notes = notes
   }
   const pricedItem = calcPrices(orderItem)
   return pricedItem
@@ -498,10 +500,12 @@ export const makeUniqueDisplayItems = (orders) => {
 
 export const makeFavoritesLookup = (favorites) => {
   if (!favorites) return {}
-  return favorites.reduce(
-    (obj, i) => ({ ...obj, [makeItemSignature(i.cart)]: i.favorite_id }),
-    {}
-  )
+  return favorites
+    .filter((i) => i.cart)
+    .reduce(
+      (obj, i) => ({ ...obj, [makeItemSignature(i.cart)]: i.favorite_id }),
+      {}
+    )
 }
 
 export const makeOrderAddress = (address) => {
