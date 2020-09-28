@@ -543,11 +543,23 @@ export const makeGroupOrderTimeStr = (iso, tz) => {
   return orderTime ? formatTime(orderTime) : null
 }
 
+export const getLastInterval = (tz) => {
+  let date = isoToDate(new Date().toISOString(), tz)
+  date.setHours(23)
+  date.setMinutes(45)
+  date.setSeconds(0)
+  date.setMilliseconds(0)
+  return date
+}
+
 export const makeIntervals = (tz) => {
   const nextInterval = getNextInterval(new Date().toISOString(), tz, 15)
+  const lastInterval = getLastInterval(tz)
+  const diff = Math.max(differenceInMinutes(lastInterval, nextInterval), 0)
+  const steps = 24 * 4 + (diff ? Math.ceil(diff / 15) : 0)
   let start = sub(nextInterval, { minutes: 24 * 60 })
   let intervals = []
-  for (let step = 0; step < 48 * 4; step++) {
+  for (let step = 0; step < steps; step++) {
     const end = add(start, { minutes: 15 })
     intervals.push({ start, end, orders: [] })
     start = end

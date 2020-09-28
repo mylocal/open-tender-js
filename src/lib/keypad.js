@@ -14,6 +14,13 @@ export const buttonsNumpad = [
   ['Clr', 0, 'Del'],
 ]
 
+export const buttonsDollars = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  ['Clr', 0, '00'],
+]
+
 export const buttonsCheckout = [
   [1, 2, 3, '$5'],
   [4, 5, 6, '$10'],
@@ -48,6 +55,19 @@ export const reduceNumpad = (value, key, clear) => {
       return value.slice(0, -1)
     default:
       return current + key
+  }
+}
+
+export const reduceDollars = (value, key, clear) => {
+  const current = clear ? '' : value
+  switch (key) {
+    case 'Clear':
+    case 'Clr':
+      return '0.00'
+    default: {
+      const val = parseInt(current.replace('.', '') + key)
+      return centsToDollars(val)
+    }
   }
 }
 
