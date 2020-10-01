@@ -150,7 +150,7 @@ export const dateStrToZonedDate = (str, tz) => {
 }
 
 export const formatDateStr = (str, fmt = HUMAN_DATE) => {
-  return format(toDate(str), fmt)
+  return str ? format(toDate(str), fmt) : null
 }
 
 export const formatTimeStr = (str) => {

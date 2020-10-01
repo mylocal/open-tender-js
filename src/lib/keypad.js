@@ -8,24 +8,24 @@ export const buttonsKeypad = [
 ]
 
 export const buttonsNumpad = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
-  ['Clr', 0, 'Del'],
+  '123'.split(''),
+  '456'.split(''),
+  '789'.split(''),
+  ['Clr', '0', 'Del'],
 ]
 
 export const buttonsDollars = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
-  ['Clr', 0, '00'],
+  '123'.split(''),
+  '456'.split(''),
+  '789'.split(''),
+  ['Clr', '0', '00'],
 ]
 
 export const buttonsCheckout = [
-  [1, 2, 3, '$5'],
-  [4, 5, 6, '$10'],
-  [7, 8, 9, '$20'],
-  ['Clr', 0, '00', 'Next $'],
+  ['1', '2', '3', '$5'],
+  ['4', '5', '6', '$10'],
+  ['7', '8', '9', '$20'],
+  ['Clr', '0', '00', 'Next $'],
 ]
 
 export const reduceKeypad = (value, key, clear) => {
