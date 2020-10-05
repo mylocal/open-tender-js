@@ -1,7 +1,10 @@
 export const handleRespError = (err) => {
   const error = typeof err === 'string' ? { detail: err } : err
-  const { title = 'Something went wrong', detail, params } = error
+  let { title = 'Something went wrong', detail, params } = error
   const messages = params ? Object.entries(params || {}) : []
+  if (detail && detail.includes('parameters') && messages.length) {
+    detail = messages[0][1]
+  }
   return { title, detail, messages, err }
 }
 

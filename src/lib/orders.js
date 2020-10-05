@@ -6,9 +6,31 @@ import {
   makeIntervals,
 } from './datetimes'
 
+export const makeChannelName = (channel) => {
+  switch (channel.type) {
+    case 'ONLINE':
+      return 'Web'
+    case 'APP':
+      return 'App'
+    case 'PORTAL':
+      return channel.ext_name
+    default:
+      return channel.type
+  }
+}
+
 export const notDone = (prep_status) => {
   const notDoneStates = [prepStatus.TODO, prepStatus.IN_PROGRESS]
   return notDoneStates.includes(prep_status)
+}
+
+export const isDone = (prep_status) => {
+  const doneStates = [
+    prepStatus.DONE,
+    prepStatus.COMPLETED,
+    prepStatus.FULFILLED,
+  ]
+  return doneStates.includes(prep_status)
 }
 
 export const notCompleted = (prep_status) => {
@@ -18,6 +40,11 @@ export const notCompleted = (prep_status) => {
     prepStatus.DONE,
   ]
   return notCompletedStates.includes(prep_status)
+}
+
+export const isCompleted = (prep_status) => {
+  const completeStates = [prepStatus.COMPLETED, prepStatus.FULFILLED]
+  return completeStates.includes(prep_status)
 }
 
 const updateCounts = (counts, ticketCounts) => {
@@ -92,4 +119,11 @@ export const makeOrderBucketsCounts = (itemTypes = [], orders = []) => {
     counts = updateCounts(counts, ticketCounts)
   })
   return counts
+}
+
+export const makeTicketCounts = (tickets) => {
+  return tickets.reduce((obj, i) => {
+    const count = obj[i.item_type_id] || 0
+    return { ...obj, [i.item_type_id]: count + i.item_nos.length }
+  }, {})
 }
