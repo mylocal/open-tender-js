@@ -28,8 +28,7 @@ export const buttonsCheckout = [
   ['Clr', '0', '00', 'Next $'],
 ]
 
-export const reduceKeypad = (value, key, clear) => {
-  const current = clear ? '' : value
+export const reduceKeypad = (value, key) => {
   switch (key) {
     case 'Clear':
     case 'Clr':
@@ -38,9 +37,9 @@ export const reduceKeypad = (value, key, clear) => {
     case 'Del':
       return value.slice(0, -1)
     case 'Space':
-      return current + ' '
+      return value + ' '
     default:
-      return current + key
+      return value + key
   }
 }
 
