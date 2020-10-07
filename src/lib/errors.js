@@ -2,10 +2,19 @@ export const handleRespError = (err) => {
   const error = typeof err === 'string' ? { detail: err } : err
   let { title = 'Something went wrong', detail, params } = error
   const messages = params ? Object.entries(params || {}) : []
+  const errors = !params
+    ? {}
+    : Object.entries(params || {}).reduce((obj, [key, msg]) => {
+        const [, attribute, index, field] = key.split('.')
+        if (!index) return { ...obj, [attribute]: msg }
+        const error = { index: JSON.parse(index)[0], [field]: msg }
+        const errors = obj[attribute] ? [...obj[attribute], error] : [error]
+        return { ...obj, [attribute]: errors }
+      }, {})
   if (detail && detail.includes('parameters') && messages.length) {
     detail = messages[0][1]
   }
-  return { title, detail, messages, err }
+  return { title, detail, messages, errors, err }
 }
 
 export const processError = (msg) => {
