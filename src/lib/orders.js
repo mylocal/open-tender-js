@@ -1,4 +1,5 @@
-import { prepStatus } from './constants'
+import { prepStatus, tenderTypeNamesMap } from './constants'
+import { capitalize } from './helpers'
 import {
   timezoneMap,
   isoToDate,
@@ -17,6 +18,11 @@ export const makeChannelName = (channel) => {
     default:
       return channel.type
   }
+}
+
+export const makeTenderTypeName = (tenderType) => {
+  const name = tenderTypeNamesMap[tenderType]
+  return name || capitalize(tenderType.replace('_', ' '))
 }
 
 export const notDone = (prep_status) => {
@@ -126,4 +132,69 @@ export const makeTicketCounts = (tickets) => {
     const count = obj[i.item_type_id] || 0
     return { ...obj, [i.item_type_id]: count + i.item_nos.length }
   }, {})
+}
+
+export const makeCartLookup = (cart) => {
+  return cart.reduce((obj, i) => ({ ...obj, [i.item_no]: i }), {})
+}
+
+export const makeItemTypeSettings = (itemType) => {
+  const {
+    is_default,
+    is_grouped,
+    is_hidden_assembly,
+    is_hidden_qa,
+    print_on_completed,
+  } = itemType || {}
+  return {
+    is_default,
+    is_grouped,
+    is_hidden_assembly,
+    is_hidden_qa,
+    print_on_completed,
+  }
+}
+
+export const makeItemTypesMap = (itemTypes) => {
+  return itemTypes
+    ? itemTypes.reduce((obj, i) => ({ ...obj, [i.item_type_id]: i }), {})
+    : {}
+}
+
+export const makeTicketGroups = (tickets, cart, itemTypes, isAssembly) => {
+  const lookup = makeCartLookup(cart)
+  const grouped = tickets.reduce((obj, i) => {
+    const items = i.item_nos.map((n) => lookup[n])
+    const settings = makeItemTypeSettings(itemTypes[i.item_type_id])
+    const hideTicket = isAssembly && settings.is_hidden_assembly
+    const ticket = { ...i, items, ...settings }
+    const group = obj[i.item_type_id] || []
+    const newGroup = hideTicket ? group : [...group, ticket]
+    return { ...obj, [i.item_type_id]: newGroup }
+  }, {})
+  return Object.values(grouped)
+}
+
+export const makeDisplayCounts = (counts) => {
+  if (!counts) return ''
+  return Object.entries(counts).map(([key, value]) => value)
+}
+
+export const displayCounts = (counts) => {
+  if (!counts) return ''
+  const countStr = Object.entries(counts)
+    // .map(([key, value]) => `${value}-${key.charAt(0)}`)
+    .map(([key, value]) => `${value}`)
+    .join('/')
+  return ` (${countStr})`
+}
+
+export const makeColor = (settings, minutes) => {
+  const { warning_minutes, alert_minutes } = settings || {}
+  if (!warning_minutes && !alert_minutes) return ''
+  return minutes < warning_minutes
+    ? '-warning'
+    : minutes < alert_minutes
+    ? '-alert'
+    : ''
 }
