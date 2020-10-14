@@ -234,7 +234,7 @@ export const makeDisplayedRevenueCenters = (
   maxDistance
 ) => {
   if (serviceType === 'WALKIN') {
-    const displayed = makeWalkinRevenueCenters(revenueCenters)
+    const displayed = makeWalkinRevenueCenters(revenueCenters, maxDistance)
     const minDistance = calcMinDistance(displayed)
     const count = displayed.length
     const { title, msg } = makeWalkinMessaging(
@@ -247,7 +247,7 @@ export const makeDisplayedRevenueCenters = (
     const error = null
     return { title, msg, error, displayed }
   } else if (serviceType === 'PICKUP') {
-    const displayed = makePickupRevenueCenters(revenueCenters)
+    const displayed = makePickupRevenueCenters(revenueCenters, maxDistance)
     const minDistance = calcMinDistance(displayed)
     const count = displayed.length
     const { title, msg } = makePickupMesssaging(
