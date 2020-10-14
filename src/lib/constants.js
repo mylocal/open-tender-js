@@ -47,3 +47,10 @@ export const prepStatus = {
   COMPLETED: 'COMPLETED',
   FULFILLED: 'FULFILLED',
 }
+
+export const optionsOrderNotifications = [
+  { name: 'Email Only', value: 'EMAIL' },
+  { name: 'SMS Only', value: 'SMS' },
+  { name: 'Both Email & SMS', value: 'ALL' },
+  { name: 'Neither', value: 'NONE' },
+]

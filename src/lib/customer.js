@@ -7,6 +7,8 @@ export const profileFields = [
   'email',
   'phone',
   'company',
+  'accepts_marketing',
+  'order_notifications',
 ]
 
 export const makeCustomerProfile = (customer) => {
