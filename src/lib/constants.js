@@ -31,6 +31,8 @@ export const tenderTypeNamesMap = {
   HOUSE_ACCOUNT: 'House Account',
   GIFT_CARD: 'Gift Card',
   COMP: 'Comp',
+  APPLE_PAY: 'Apple Pay',
+  GOOGLE_PAY: 'Google Pay',
 }
 
 export const loyaltyType = {
