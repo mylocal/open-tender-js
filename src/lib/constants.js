@@ -56,3 +56,8 @@ export const optionsOrderNotifications = [
   { name: 'Both Email & SMS', value: 'ALL' },
   { name: 'Neither', value: 'NONE' },
 ]
+
+export const optionsOrderNotificationsTemp = [
+  { name: 'Email', value: 'EMAIL' },
+  { name: 'None', value: 'NONE' },
+]
