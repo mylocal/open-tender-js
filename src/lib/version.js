@@ -23,7 +23,7 @@ export const maybeRefreshVersion = (open) => {
     .then((meta) => {
       const latest = meta.version
       const current = global.appVersion
-      console.log(latest, current)
+      // console.log(latest, current)
       const shouldForceRefresh = semverGreaterThan(latest, current)
       if (shouldForceRefresh) {
         open({ type: 'version', args: { latest, current, preventClose: true } })
