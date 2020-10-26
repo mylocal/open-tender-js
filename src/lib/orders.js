@@ -193,8 +193,8 @@ export const makeColor = (settings, minutes) => {
   const { warning_minutes, alert_minutes } = settings || {}
   if (!warning_minutes && !alert_minutes) return ''
   return minutes < warning_minutes
-    ? '-warning'
+    ? 'warning'
     : minutes < alert_minutes
-    ? '-alert'
-    : ''
+    ? 'alert'
+    : 'text'
 }

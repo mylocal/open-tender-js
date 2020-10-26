@@ -59,6 +59,10 @@ export const weekdayAndTimeToDate = (weekday, timeStr) => {
 
 export const parseIsoToDate = (iso) => parseISO(iso)
 
+export const fmtDate = (date, fmt) => {
+  return format(date, fmt)
+}
+
 // https://stackoverflow.com/questions/54555491/how-to-guess-users-timezone-using-date-fns-in-a-vuejs-app
 export const getUserTimezone = () => {
   try {
@@ -565,4 +569,10 @@ export const makeIntervals = (tz) => {
     start = end
   }
   return intervals
+}
+
+export const formatTimeList = (dateStr, tz, includeDate) => {
+  const date = isoToDate(dateStr, tz)
+  const fmt = includeDate ? 'MMM d, h:mma' : 'h:mma'
+  return format(date, fmt).replace('AM', 'am').replace('PM', 'pm')
 }
