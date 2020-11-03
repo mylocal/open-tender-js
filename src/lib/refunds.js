@@ -60,6 +60,7 @@ const adjustAmount = (amount, refundAmount) => {
 }
 
 export const adjustAmounts = (order, lookup, list, key = 'id') => {
+  if (!order[list]) return order
   order[list].forEach((i) => {
     const amount = lookup[list][i[key]]
     if (amount) i.amount = adjustAmount(i.amount, amount)
