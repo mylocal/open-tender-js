@@ -405,10 +405,12 @@ export const makeGuestLookup = (cartGuests) => {
 
 export const combineCarts = (cart, guestCart, cartOwner, cartGuests) => {
   const guestLookup = makeGuestLookup(cartGuests)
-  const withGuestNames = guestCart.map((i) => {
-    const guest = guestLookup[i.cart_guest_id]
-    return { ...i, madeFor: `${guest.first_name} ${guest.last_name}` }
-  })
+  const withGuestNames = guestCart
+    .filter((i) => guestLookup[i.cart_guest_id])
+    .map((i) => {
+      const guest = guestLookup[i.cart_guest_id]
+      return { ...i, madeFor: `${guest.first_name} ${guest.last_name}` }
+    })
   const withOwnerName = cart.map((i) => {
     return {
       ...i,
