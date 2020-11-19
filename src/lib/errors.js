@@ -1,3 +1,5 @@
+import { isEmpty } from './helpers'
+
 export const handleRespError = (err) => {
   const error = typeof err === 'string' ? { detail: err } : err
   let { title = 'Something went wrong', detail, params } = error
@@ -58,7 +60,7 @@ export const makeFormErrors = (error) => {
 
 export const handleCheckoutErrors = (errors, asMessages = true) => {
   const { detail, params, message } = errors
-  if (!params) return { form: detail || message }
+  if (!params || isEmpty(params)) return { form: detail || message }
   const errObj = Object.entries(params).reduce(
     (obj, error) => {
       const [key, value] = error
