@@ -7,6 +7,7 @@ import {
   time24ToDate,
   formatDateStr,
   makeWeekday,
+  fmtDate,
 } from './datetimes'
 import { capitalize } from './helpers'
 
@@ -134,7 +135,10 @@ const makeOrderMsg = (
     const weekday =
       orderTimes[0].weekday === todayWeekday
         ? ''
-        : `${capitalize(orderTimes[0].weekday)} @ `
+        : `${capitalize(orderTimes[0].weekday)}, ${fmtDate(
+            orderTimes[0].date,
+            'MMMM d'
+          )} @ `
     readableDate =
       startTimeStr === endTimeStr
         ? `${weekday}${startTimeStr}`
