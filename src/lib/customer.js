@@ -21,6 +21,7 @@ export const makeCustomerProfile = (customer) => {
 export const getLastOrder = (orders) => {
   if (!orders || !orders.length) return null
   const withCreated = orders
+    .filter((i) => i.order_type !== 'MERCH')
     .map((i) => ({ ...i, createdAt: parseISO(i.created_at) }))
     .sort((a, b) => a.createdAt - b.createdAt)
     .reverse()
