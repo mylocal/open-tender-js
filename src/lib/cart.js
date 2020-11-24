@@ -169,7 +169,7 @@ export const makeRevenueCenterMsg = (
   const waitTime = wait_times ? wait_times[st] : null
   const statusMsg = statusMessages[revenueCenter.status]
   const orderMsg =
-    !statusMsg && (firstTime || orderTime)
+    !statusMsg && (firstTime || (orderTime && orderTime.length))
       ? makeOrderMsg(
           tz,
           serviceType,
