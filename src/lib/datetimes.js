@@ -407,12 +407,7 @@ export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
   const { first_times, order_times } = settings
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   if (!first_times || !first_times[st]) {
-    if (!order_times || !order_times[st]) return null
-    // const orderTimes = makeOrderTimes(order_times[st], tz)
-    // const selected = requestedAt
-    //   ? orderTimes.find((i) => i.iso === requestedAt)
-    //   : null
-    // return selected ? selected.iso : orderTimes[0].iso
+    if (!order_times || !order_times[st] || !order_times[st].length) return null
     const selected = findOrderTime(order_times[st], tz, requestedAt)
     return selected.iso
   }
