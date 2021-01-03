@@ -297,7 +297,7 @@ export const LOCATIONS_MESSAGES = {
   DELIVERY: {
     default: {
       title: "Let's find the nearest location",
-      msg: 'Please enter your address below.',
+      msg: 'Please enter your address.',
       error: null,
     },
     noStreet: {
@@ -312,7 +312,7 @@ export const LOCATIONS_MESSAGES = {
       error: null,
     },
     noDelivery: {
-      title: "Delivery isn't available in your area",
+      title: "Delivery isn't available in your area at this time",
       msg:
         "We're really sorry about that. Please enter a different address or head back and start a pickup order.",
       error: null,
