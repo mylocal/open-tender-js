@@ -270,7 +270,7 @@ export const makeDisplayedRevenueCenters = (
 export const LOCATIONS_MESSAGES = {
   PICKUP: {
     default: {
-      title: 'Please choose a pickup location',
+      title: 'Please choose a location',
       msg: 'Or enter a zip code to find the location nearest you.',
     },
     address: {
@@ -285,13 +285,13 @@ export const LOCATIONS_MESSAGES = {
     },
     geo: {
       title: 'locations in your area',
-      msg: 'Please enter a zip code or address for a more accurate result.',
+      msg: 'Please enter an address or zip code for a more accurate result.',
     },
     geoFar: {
       title:
         "Looks like we don't have any locations that offer pickup in your area",
       msg:
-        'Please enter a zip code or address if you live in a different area.',
+        'Please enter an address or zip code if you live in a different area.',
     },
   },
   DELIVERY: {
