@@ -567,7 +567,7 @@ export const incrementItem = (cart, index) => {
 export const decrementItem = (cart, index) => {
   const item = cart[index]
   const newQuantity = Math.max(item.quantity - item.increment, 0)
-  if (newQuantity === 0) {
+  if (newQuantity === 0 || newQuantity < item.min) {
     cart.splice(index, 1)
     cart = cart.map((i, index) => ({ ...i, index: index }))
   } else {

@@ -422,6 +422,10 @@ export const makeFirstTime = (settings, tz, serviceType, requestedAt) => {
   if (requestedDate && requestedDate > firstDate) {
     return requestedAt
   }
+  const { minutes, interval } = firstTime
+  if (hasAsap && minutes % interval !== 0) {
+    return 'asap'
+  }
   return firstTime.utc
 }
 
