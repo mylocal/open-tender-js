@@ -88,7 +88,7 @@ export const validateCreditCard = (card, cardType) => {
   const cvvLength = cardType === 'AMEX' ? 4 : 3
   cvv = cvv ? cvv.replace(/\s/g, '') : ''
   if (cvv.length !== cvvLength) {
-    errors.cvv = `CVV must be ${cvvLength} digits`
+    errors.cvv = `CVV must be ${cvvLength} digits for this card type`
   } else if (!isNum(cvv)) {
     errors.cvv = 'CVV must be only numbers'
   }
