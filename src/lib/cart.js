@@ -364,7 +364,7 @@ const rehydrateSurcharges = (surcharges) => {
 const rehydrateDiscounts = (discounts) => {
   return discounts
     .filter((i) => !i.is_promo_code)
-    .map((i) => ({ id: i.discount_id, ext_id: i.ext_id }))
+    .map((i) => ({ id: i.discount_id || i.id, ext_id: i.ext_id }))
 }
 
 const rehydratePromoCodes = (discounts) => {
