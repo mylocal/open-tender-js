@@ -43,6 +43,12 @@ const amexChunks = [
   [10, 15],
 ]
 
+export const makeNumeric = (str) => {
+  str = str.match(/\d+/g) // limit to numerical input, returns an array
+  if (!str) return ''
+  return str.join('').replace(/\s/g, '')
+}
+
 export const makeAcctNumber = (str, cardType) => {
   str = str.match(/\d+/g) // limit to numerical input, returns an array
   if (!str) return ''
