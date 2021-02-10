@@ -150,9 +150,11 @@ const makeOrderMsg = (
 }
 
 export const makeNotAcceptingOrdersMsg = (serviceType) => {
-  return `This location is not currently accepting ${serviceTypeNamesMap[
-    serviceType
-  ].toLowerCase()} orders. Please try switching to a different order type.`
+  const serviceTypeName = serviceTypeNamesMap[serviceType]
+  if (!serviceTypeName) {
+    return 'This location is not currently accepting orders.'
+  }
+  return `This location is not currently accepting ${serviceTypeName.toLowerCase()} orders. Please try switching to a different order type.`
 }
 
 export const makeRevenueCenterMsg = (
