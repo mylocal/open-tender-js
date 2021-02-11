@@ -376,7 +376,7 @@ const rehydratePromoCodes = (discounts) => {
 const rehydrateTenders = (tenders) => {
   // const giftCards = tenders.filter((i) => i.tender_type === 'GIFT_CARD')
   const other = tenders
-    .filter((i) => i.tender_type !== 'GIFT_CARD')
+    // .filter((i) => i.tender_type !== 'GIFT_CARD')
     .map((i) => {
       if (i.tender_type === 'CREDIT') {
         return { ...i, ...i.credit_card }
