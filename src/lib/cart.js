@@ -122,7 +122,7 @@ const makeOrderMsg = (
         ? `in about ${waitTime} minutes`
         : makeReadableDateStrFromIso(firstTime.utc, tz, true)
             .replace('Today', 'today')
-            .replace('Tomorrow', 'tomorrow')
+            .replace('Tomorrow', 'TOMORROW')
             .replace('@', estimate)
   } else {
     const orderTimes = makeOrderTimes(orderTime, tz)
@@ -169,7 +169,8 @@ export const makeRevenueCenterMsg = (
   const firstTime = first_times ? first_times[st] : null
   const orderTime = order_times ? order_times[st] : null
   const waitTime = wait_times ? wait_times[st] : null
-  const statusMsg = statusMessages[revenueCenter.status]
+  const tempClosed = revenueCenter.status === 'CLOSED_TEMPORARILY'
+  const statusMsg = !tempClosed ? statusMessages[revenueCenter.status] : null
   const orderMsg =
     !statusMsg && (firstTime || (orderTime && orderTime.length))
       ? makeOrderMsg(
@@ -181,11 +182,16 @@ export const makeRevenueCenterMsg = (
           waitTime
         )
       : null
-  const message =
+  let message =
     orderMsg ||
-    (statusMsg ? statusMsg.msg : makeNotAcceptingOrdersMsg(serviceType))
-  const className = orderMsg ? 'ot-color-success' : 'ot-color-alert'
-  return { message, className }
+    (statusMsg ? statusMsg.subtitle : makeNotAcceptingOrdersMsg(serviceType))
+  let color = orderMsg ? 'success' : 'alert'
+  if (tempClosed) {
+    color = 'alert'
+    message = message.charAt(0).toLowerCase() + message.substring(1)
+    message = `This location is temporarily closed for technical or operational reasons. Please try back later today, otherwise ${message} if you want to place an order now.`
+  }
+  return { message, color }
 }
 
 const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
