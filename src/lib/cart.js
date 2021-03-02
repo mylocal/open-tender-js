@@ -36,11 +36,11 @@ export const formatQuantity = (n) => {
   return addCommas(parseFloat(n), 0)
 }
 
-export const formatDollars = (str, space = '') => {
+export const formatDollars = (str, space = '', decimals = 2) => {
   const floatPrice = parseFloat(str)
   return floatPrice < 0
-    ? `($${addCommas(Math.abs(floatPrice), 2)})`
-    : `$${addCommas(floatPrice, 2)}${space}`
+    ? `($${addCommas(Math.abs(floatPrice), decimals)})`
+    : `$${addCommas(floatPrice, decimals)}${space}`
 }
 
 export const getItemOptions = (item) => {
