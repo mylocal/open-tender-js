@@ -9,6 +9,7 @@ export const profileFields = [
   'company',
   'accepts_marketing',
   'order_notifications',
+  'is_verified',
 ]
 
 export const makeCustomerProfile = (customer) => {
