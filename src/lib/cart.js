@@ -814,6 +814,7 @@ export const prepareOrder = (data) => {
     // person_count must be submitted as integer
     if (details.person_count)
       details.person_count = parseInt(details.person_count) || null
+    if (data.deviceType) details.device_type = data.deviceType
     order.details = { ...details }
   }
   if (data.surcharges) order.surcharges = data.surcharges
