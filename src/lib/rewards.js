@@ -1,7 +1,12 @@
 import { getMinutesfromDate, time24ToMinutes } from './datetimes'
 
-export const makeValidDeals = (deals, order) => {
-  const { orderType, serviceType, revenueCenter } = order
+export const makeValidDeals = (
+  deals,
+  orderType,
+  serviceType,
+  revenueCenterId
+) => {
+  if (!deals || !deals.length) return []
   if (orderType) {
     deals = deals.filter((i) => !i.order_type || i.order_type === orderType)
   }
@@ -10,14 +15,13 @@ export const makeValidDeals = (deals, order) => {
       (i) => !i.service_type || i.service_type === serviceType
     )
   }
-  if (revenueCenter) {
-    const { revenue_center_id } = revenueCenter
+  if (revenueCenterId) {
     deals = deals.filter(
       (i) =>
         !i.revenue_centers.length ||
         i.revenue_centers
           .map((r) => r.revenue_center_id)
-          .includes(revenue_center_id)
+          .includes(revenueCenterId)
     )
   }
   const minutes = getMinutesfromDate(new Date())
