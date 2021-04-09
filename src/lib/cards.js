@@ -68,6 +68,42 @@ export const makeAcctNumber = (str, cardType) => {
   }
 }
 
+export const formatCardField = (field, value) => {
+  const cleanValue = makeNumeric(value)
+  switch (field) {
+    case 'acct': {
+      const currentType = getCardType(value.replace(/\s/g, ''))
+      return makeAcctNumber(value, currentType)
+    }
+    case 'exp': {
+      value = cleanValue.slice(0, 4)
+      if (value.length > 2) {
+        value = `${value.slice(0, 2)} / ${value.slice(2, 4)}`
+      }
+      return value
+    }
+    case 'cvv':
+      return cleanValue.slice(0, 4)
+    case 'zip':
+      return cleanValue.slice(0, 5)
+    default:
+      return cleanValue
+  }
+}
+
+export const formatCard = (card) => {
+  if (!card) return [null, null]
+  const creditCardType = getCardType(card.acct.replace(/\s/g, ''))
+  const creditCard = {
+    acct: formatCardField('acct', card.acct),
+    exp: formatCardField('exp', card.exp),
+    cvv: formatCardField('cvv', card.cvv),
+    zip: formatCardField('zip', card.zip),
+    save: card.save || true,
+  }
+  return [creditCard, creditCardType]
+}
+
 export const validateCreditCard = (card, cardType) => {
   const errors = {}
   let { acct, exp, cvv, zip } = card
@@ -80,7 +116,7 @@ export const validateCreditCard = (card, cardType) => {
     errors.acct = 'Card number must be only numbers'
   }
 
-  exp = (exp ? exp.replace(/\s/g, '') : '').padStart(4, '0')
+  exp = (exp ? exp.replace(/\s/g, '') : '').replace('/', '').padStart(4, '0')
   const expMonth = exp.slice(0, 2)
   const expYear = exp.slice(2, 4)
   if (!isNum(exp) || exp.length !== 4) {

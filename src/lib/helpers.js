@@ -58,6 +58,17 @@ export const cleanPhone = (phone) => {
   return p
 }
 
+export const makePhone = (phone) => {
+  if (!phone) return ''
+  let p = phone.replace(/\D/g, '')
+  if (p.length > 6) {
+    return `${p.slice(0, 3)}-${p.slice(3, 6)}-${p.slice(6, 10)}`
+  } else if (p.length > 3) {
+    return `${p.slice(0, 3)}-${p.slice(3, 6)}`
+  }
+  return p
+}
+
 export const makeRandomNumberString = () =>
   Math.floor(Math.random() * 1000000000).toString()
 

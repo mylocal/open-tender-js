@@ -829,6 +829,7 @@ export const prepareOrder = (data) => {
 }
 
 export const checkAmountRemaining = (total, tenders) => {
+  if (!tenders) return total ? parseFloat(total) : 0.0
   const remaining =
     parseFloat(total) -
     tenders.reduce((t, i) => (t += parseFloat(i.amount)), 0.0)
