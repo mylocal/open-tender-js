@@ -277,10 +277,11 @@ export const setTimeForDate = (date, hours, minutes, seconds = 0) => {
   return date
 }
 
-export const minutesToDate = (minutes) => {
+export const minutesToDate = (minutes, date) => {
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
-  return setTimeForDate(new Date(), hours, mins)
+  const dateCloned = date ? new Date(date.getTime()) : new Date()
+  return setTimeForDate(dateCloned, hours, mins)
 }
 
 export const time24ToDate = (str) => {
@@ -293,14 +294,39 @@ export const time24ToDateStr = (str, fmt = TIME) => {
   return format(minutesToDate(minutes), fmt).replace(':00', '').toLowerCase()
 }
 
-export const minutesToDates = (minutes) => {
+export const minutesToDates = (minutes, date) => {
   return minutes.map((minute) => {
-    return minutesToDate(minute)
+    return minutesToDate(minute, date)
   })
 }
 
 export const getMinutesfromDate = (date) => {
   return date.getHours() * 60 + date.getMinutes()
+}
+
+export const getNextIntervalMinutes = (minutes, interval) => {
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  const intervals = interval === 15 ? [0, 15, 30, 45, 60] : [0, 30, 60]
+  const nextMinute = intervals.filter((i) => i >= mins)[0]
+  return hours * 60 + nextMinute
+}
+
+// start and end should be submitted as minutes (integers)
+export const makeTimeIntervals = (
+  date,
+  start,
+  end,
+  interval,
+  excludeTimes = []
+) => {
+  const nextStart = getNextIntervalMinutes(start, interval)
+  const excluded = excludeTimes.map((i) => getMinutesfromDate(i))
+  const minutes = [...range(nextStart, end, interval)].filter(
+    (i) => !excluded.includes(i)
+  )
+  const dates = minutesToDates(minutes, date)
+  return dates.map((d) => ({ label: format(d, 'h:mm aa'), value: d }))
 }
 
 export const makeDatepickerArgs = (
