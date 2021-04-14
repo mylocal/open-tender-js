@@ -390,6 +390,58 @@ export const makeDatepickerArgs = (
   return { excludeTimes, isClosed, updatedDate, minDate, maxDate }
 }
 
+export const makeDatePickerTimes = (settings, serviceType, date) => {
+  if (!date) return { excludeTimes: [], interval: 15 }
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  const interval = settings.first_times[st].interval
+  const firstTimes = settings.first_times[st]
+  const excludedTimes = settings.excluded_times
+    ? settings.excluded_times[st]
+    : {}
+  const validTimes = settings.valid_times[st]
+  const weekdayTimes = makeWeekdaysExcluded(validTimes)
+  const weekday = format(date, 'EEEE').toUpperCase()
+  const dateStr = format(date, 'yyyy-MM-dd')
+  const isToday = dateStr === todayDate()
+
+  /* if today, excluded all times before the first minute */
+  const lastTime =
+    Math.ceil((firstTimes.minutes - interval) / interval) * interval
+  const todayExcludeded = isToday ? [...range(0, lastTime, interval)] : []
+
+  /* weekdayExcluded = times excluded based on regular hours + blocked hours */
+  const weekdayExcluded = weekdayTimes[weekday] || []
+
+  /* otherExcluded = times excluded due to holiday hours + throttled times */
+  const otherExcluded = excludedTimes[dateStr] || []
+
+  /* combine exclued times, remove duplicates and sort */
+  const allExcluded = [
+    ...new Set([...todayExcludeded, ...weekdayExcluded, ...otherExcluded]),
+  ].sort()
+
+  const excludeTimes = minutesToDates(allExcluded)
+  return { excludeTimes, interval }
+}
+
+export const makeDatePickerDates = (settings, serviceType) => {
+  const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
+  const validTimes = settings.valid_times[st]
+  const daysAhead = settings.days_ahead[st]
+  const firstTimes = settings.first_times[st]
+  const holidays = settings.holidays[st]
+  const excludeDates = holidays.map((i) => makeLocalDate(i))
+  const minDate = dateStrToDate(firstTimes.date)
+  const maxDate =
+    daysAhead != null ? add(new Date(), { days: daysAhead }) : null
+  const weekdayTimes = makeWeekdaysExcluded(validTimes)
+  const closedWeekdays = makeClosedWeekdays(weekdayTimes)
+  const filterDate = (date) => {
+    return !closedWeekdays.includes(date.getDay())
+  }
+  return { minDate, maxDate, excludeDates, filterDate }
+}
+
 export const makeWeekdayIndices = (weekdays) => {
   if (!weekdays) return []
   return weekdays.map((weekday) => weekdaysUpper.indexOf(weekday))
