@@ -456,6 +456,26 @@ export const makeItemSignature = (item) => {
   return [item.id, ...optionIds].join('.')
 }
 
+export const makeCartItemSignature = (item) => {
+  const optionIds = !item.groups
+    ? []
+    : item.groups
+        .reduce((arr, group) => {
+          const ids = group.options
+            .filter((o) => o.quantity > 0)
+            .reduce((optionsArr, o) => {
+              const optionArr = new Array(o.quantity)
+              optionArr.fill(o.id)
+              return [...optionsArr, ...optionArr]
+            }, [])
+          return [...arr, ...ids]
+        }, [])
+        .sort((a, b) => a - b)
+  const itemIds = [item.id, ...optionIds].join('.')
+  const signature = `${itemIds}.${item.madeFor}.${item.notes}`
+  return signature
+}
+
 export const makeDisplayItemGroups = (optionGroups) => {
   if (!optionGroups || !optionGroups.length) return []
   return optionGroups.map((g) => {
@@ -545,7 +565,20 @@ export const calcCartCounts = (cart) => {
 
 export const addItem = (cart, item) => {
   if (typeof item.index === 'undefined') {
-    cart.push({ ...item, index: cart.length })
+    const itemSignature = makeCartItemSignature(item)
+    const itemSignatures = cart.map((i) => ({
+      signature: makeCartItemSignature(i),
+      ...i,
+    }))
+    const match = itemSignatures.find((i) => i.signature === itemSignature)
+    if (match) {
+      const quantity = item.quantity + match.quantity
+      const newItem = { ...item, quantity }
+      const updated = calcPrices(newItem)
+      cart[match.index] = { ...updated, index: match.index }
+    } else {
+      cart.push({ ...item, index: cart.length })
+    }
   } else {
     cart[item.index] = item
   }
