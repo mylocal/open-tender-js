@@ -114,7 +114,6 @@ export const makeOrderBucketsCounts = (itemTypes = [], orders = []) => {
     .reduce((obj, i) => ({ ...obj, [i.name]: 0 }), {})
   let counts = { Orders: 0, ...itemTypeCounts }
   orders.forEach((order) => {
-    const tz = timezoneMap[order.timezone]
     const ticketCounts = order.tickets.reduce((obj, ticket) => {
       const count = obj[ticket.item_type_name] || 0
       return {
@@ -177,14 +176,14 @@ export const makeTicketGroups = (tickets, cart, itemTypes, isAssembly) => {
 
 export const makeDisplayCounts = (counts) => {
   if (!counts) return ''
-  return Object.entries(counts).map(([key, value]) => value)
+  return Object.entries(counts).map(([, value]) => value)
 }
 
 export const displayCounts = (counts) => {
   if (!counts) return ''
   const countStr = Object.entries(counts)
     // .map(([key, value]) => `${value}-${key.charAt(0)}`)
-    .map(([key, value]) => `${value}`)
+    .map(([, value]) => `${value}`)
     .join('/')
   return ` (${countStr})`
 }

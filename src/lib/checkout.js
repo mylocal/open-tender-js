@@ -1,4 +1,5 @@
 import { checkAmountRemaining } from './cart'
+import { tenderTypeNamesMap } from './constants'
 
 export const adjustTenders = (tenders, isPaid, amountRemaining, updateForm) => {
   if (!tenders.length || isPaid) return

@@ -866,5 +866,5 @@ export const checkAmountRemaining = (total, tenders) => {
   const remaining =
     parseFloat(total) -
     tenders.reduce((t, i) => (t += parseFloat(i.amount)), 0.0)
-  return remaining === -0.0 ? 0.0 : remaining
+  return Object.is(remaining, -0) ? 0.0 : remaining
 }

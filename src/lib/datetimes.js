@@ -552,7 +552,7 @@ export const adjustRequestedAt = (requestedAt, tz, interval, leadTime) => {
   return dateToIso(adjusted, tz)
 }
 
-export const getFirstTime = (settings, serviceType) => {
+export const getFirstTime = (settings, serviceType, tz) => {
   const { first_times, order_times } = settings
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   if (!first_times || !first_times[st]) {
