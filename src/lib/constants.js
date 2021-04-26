@@ -38,6 +38,7 @@ export const tenderTypeNamesMap = {
 export const loyaltyType = {
   CREDIT: 'CREDIT',
   PROMO_CODE: 'PROMO_CODE',
+  POINTS: 'POINTS',
 }
 
 export const MAX_DISTANCE = 100
