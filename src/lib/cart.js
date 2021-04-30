@@ -235,6 +235,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
       included: g.included_options,
       max: g.max_options,
       min: g.min_options,
+      isSize: !!g.is_size,
       options: options,
     }
     return group
