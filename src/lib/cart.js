@@ -224,6 +224,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         max: isSoldOut ? 0 : o.max_quantity,
         min: o.min_quantity,
         isSoldOut: isSoldOut,
+        points: o.points || 0,
       }
       return option
     })
@@ -249,7 +250,11 @@ export const calcPrices = (item) => {
     const options = g.options.map((o) => {
       const includedRemaining = Math.max(g.included - groupQuantity, 0)
       const priceQuantity = Math.max(o.quantity - includedRemaining, 0)
-      const option = { ...o, totalPrice: priceQuantity * o.price }
+      const option = {
+        ...o,
+        totalPrice: priceQuantity * o.price,
+        totalPoints: priceQuantity * o.points,
+      }
       groupQuantity += o.quantity || 0
       return option
     })
@@ -259,10 +264,22 @@ export const calcPrices = (item) => {
     return t + g.options.reduce((ot, o) => ot + o.totalPrice, 0.0)
   }, 0.0)
   const totalPrice = item.quantity * (item.price + optionsPrice)
-  return { ...item, totalPrice: totalPrice, groups: groups }
+  const optionsPoints = groups.reduce((t, g) => {
+    return t + g.options.reduce((ot, o) => ot + o.totalPoints, 0)
+  }, 0.0)
+  const totalPoints = item.points
+    ? item.quantity * (item.points + optionsPoints)
+    : null
+  return { ...item, groups, totalPrice, totalPoints }
 }
 
-export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
+export const makeOrderItem = (
+  item,
+  isEdit,
+  soldOut = [],
+  simpleItem,
+  hasPoints = false
+) => {
   const groups = makeOrderItemGroups(item.option_groups, isEdit, soldOut)
   const orderItem = {
     id: item.id,
@@ -284,6 +301,7 @@ export const makeOrderItem = (item, isEdit, soldOut = [], simpleItem) => {
     increment: item.increment,
     max: item.max_quantity,
     min: item.min_quantity,
+    points: hasPoints ? item.points || null : null,
   }
   if (simpleItem) {
     const { cart_guest_id, customer_id, made_for, notes } = simpleItem
