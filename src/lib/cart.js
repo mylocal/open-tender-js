@@ -254,6 +254,7 @@ export const calcPrices = (item) => {
         ...o,
         totalPrice: priceQuantity * o.price,
         totalPoints: priceQuantity * o.points,
+        totalCals: o.cals ? o.quantity * o.cals : 0,
       }
       groupQuantity += o.quantity || 0
       return option
@@ -270,7 +271,11 @@ export const calcPrices = (item) => {
   const totalPoints = item.points
     ? item.quantity * (item.points + optionsPoints)
     : null
-  return { ...item, groups, totalPrice, totalPoints }
+  const optionsCals = groups.reduce((t, g) => {
+    return t + g.options.reduce((ot, o) => ot + o.totalCals, 0)
+  }, 0.0)
+  const totalCals = item.cals ? item.quantity * (item.cals + optionsCals) : null
+  return { ...item, groups, totalPrice, totalPoints, totalCals }
 }
 
 export const makeOrderItem = (
