@@ -280,8 +280,7 @@ export const LOCATIONS_MESSAGES = {
     addressFar: {
       title:
         "Looks like we don't have any locations that offer pickup in your area",
-      msg:
-        'Sorry about that. Please enter a different address or head back and choose a different order type.',
+      msg: 'Sorry about that. Please enter a different address or head back and choose a different order type.',
     },
     geo: {
       title: 'locations in your area',
@@ -290,8 +289,7 @@ export const LOCATIONS_MESSAGES = {
     geoFar: {
       title:
         "Looks like we don't have any locations that offer pickup in your area",
-      msg:
-        'Please enter an address or zip code if you live in a different area.',
+      msg: 'Please enter an address or zip code if you live in a different area.',
     },
   },
   DELIVERY: {
@@ -313,8 +311,7 @@ export const LOCATIONS_MESSAGES = {
     },
     noDelivery: {
       title: "Delivery isn't available in your area at this time",
-      msg:
-        "We're really sorry about that. Please enter a different address or head back and start a pickup order.",
+      msg: "We're really sorry about that. Please enter a different address or head back and start a pickup order.",
       error: null,
     },
   },
