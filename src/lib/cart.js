@@ -274,7 +274,10 @@ export const calcPrices = (item) => {
   const optionsCals = groups.reduce((t, g) => {
     return t + g.options.reduce((ot, o) => ot + o.totalCals, 0)
   }, 0.0)
-  const totalCals = item.cals ? item.quantity * (item.cals + optionsCals) : null
+  const totalCals =
+    item.cals || item.cals === 0
+      ? item.quantity * (item.cals + optionsCals)
+      : null
   return { ...item, groups, totalPrice, totalPoints, totalCals }
 }
 
@@ -286,6 +289,9 @@ export const makeOrderItem = (
   hasPoints = false
 ) => {
   const groups = makeOrderItemGroups(item.option_groups, isEdit, soldOut)
+  const cals = item.nutritional_info
+    ? parseInt(item.nutritional_info.calories)
+    : null
   const orderItem = {
     id: item.id,
     name: item.name,
@@ -297,9 +303,7 @@ export const makeOrderItem = (
     tags: convertStringToArray(item.tags),
     ingredients: item.ingredients,
     nutritionalInfo: item.nutritional_info,
-    cals: item.nutritional_info
-      ? parseInt(item.nutritional_info.calories) || null
-      : null,
+    cals: isNaN(cals) ? null : cals,
     groups: groups,
     quantity: item.min_quantity || 1 * item.increment,
     price: parseFloat(item.price),
