@@ -204,6 +204,9 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         : o.opt_is_default && !isEdit
         ? o.min_quantity || 1
         : 0
+      const cals = o.nutritional_info
+        ? parseInt(o.nutritional_info.calories)
+        : null
       const option = {
         id: o.id,
         name: o.name,
@@ -214,9 +217,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         tags: convertStringToArray(o.tags),
         ingredients: o.ingredients,
         nutritionalInfo: o.nutritional_info,
-        cals: o.nutritional_info
-          ? parseInt(o.nutritional_info.calories) || null
-          : null,
+        cals: isNaN(cals) ? null : cals,
         price: parseFloat(o.price),
         quantity: quantity,
         isDefault: o.opt_is_default,
@@ -513,6 +514,9 @@ export const makeDisplayItemGroups = (optionGroups) => {
 }
 
 export const makeDisplayItem = (item, isOption = false) => {
+  const cals = item.nutritional_info
+    ? parseInt(item.nutritional_info.calories)
+    : null
   let displayItem = {
     id: item.id,
     name: item.name,
@@ -522,9 +526,7 @@ export const makeDisplayItem = (item, isOption = false) => {
     allergens: item.allergens || [],
     tags: item.tags || [],
     nutritionalInfo: item.nutritional_info || null,
-    cals: item.nutritional_info
-      ? parseInt(item.nutritional_info.calories) || null
-      : null,
+    cals: isNaN(cals) ? null : cals,
     groups: makeDisplayItemGroups(item.groups),
     quantity: item.quantity || 1,
     price: item.price !== undefined ? parseFloat(item.price) : null,
@@ -700,17 +702,6 @@ const makeGroupsLookup = (item) => {
   }, {})
 }
 
-export const printOptionCheck = (option) => {
-  console.log(
-    option.name,
-    option.quantity,
-    option.min,
-    option.max,
-    option.quantity > option.max,
-    option.quantity < option.min
-  )
-}
-
 export const validateCart = (cart, categories, soldOut) => {
   const itemIds = cart.map((item) => item.id)
   const itemLookup = makeItemLookup(categories, itemIds)
@@ -766,7 +757,6 @@ export const validateCart = (cart, categories, soldOut) => {
               (newOption.max && option.quantity > newOption.max) ||
               (newOption.min && option.quantity < newOption.min)
             ) {
-              // printOptionCheck(option)
               invalidOptions.push(option)
               return option
             } else {
@@ -831,26 +821,6 @@ export const validateCart = (cart, categories, soldOut) => {
     errors = { missingItems, invalidItems }
   }
   return { newCart, errors }
-}
-
-export const printCart = (cart) => {
-  cart.forEach((item) => {
-    console.log(item.name, item.price, item.quantity, item.totalPrice)
-    item.groups.forEach((group) => {
-      console.log('  ', group.name)
-      group.options.forEach((option) => {
-        if (option.quantity > 0) {
-          console.log(
-            '    ',
-            option.name,
-            option.price,
-            option.quantity,
-            option.totalPrice
-          )
-        }
-      })
-    })
-  })
 }
 
 /* order submission */
