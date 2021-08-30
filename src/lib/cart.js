@@ -312,6 +312,8 @@ export const makeOrderItem = (
     max: item.max_quantity,
     min: item.min_quantity,
     points: hasPoints ? item.points || null : null,
+    upsellItems: item.upsell_items || [],
+    similarItems: item.similar_items || [],
   }
   if (simpleItem) {
     const { cart_guest_id, customer_id, made_for, notes } = simpleItem
