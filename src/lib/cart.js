@@ -300,6 +300,7 @@ export const makeOrderItem = (
     category: item.category_name,
     description: item.description,
     imageUrl: item.large_image_url,
+    slug: item.slug,
     allergens: convertStringToArray(item.allergens),
     tags: convertStringToArray(item.tags),
     ingredients: item.ingredients,
