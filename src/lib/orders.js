@@ -65,7 +65,7 @@ const updateCounts = (counts, ticketCounts) => {
 
 export const makeOrdersCounts = (itemTypes = [], orders = []) => {
   const itemTypeCounts = itemTypes
-    .filter((i) => !i.is_grouped)
+    .filter((i) => i.is_default)
     .reduce((obj, i) => ({ ...obj, [i.name]: 0 }), {})
   let current = { Orders: 0, ...itemTypeCounts }
   let qa = { Orders: 0, ...itemTypeCounts }
@@ -110,7 +110,7 @@ export const makeOrderBuckets = (orders, tz, prepStates = []) => {
 
 export const makeOrderBucketsCounts = (itemTypes = [], orders = []) => {
   const itemTypeCounts = itemTypes
-    .filter((i) => !i.is_grouped)
+    .filter((i) => i.is_default)
     .reduce((obj, i) => ({ ...obj, [i.name]: 0 }), {})
   let counts = { Orders: 0, ...itemTypeCounts }
   orders.forEach((order) => {
