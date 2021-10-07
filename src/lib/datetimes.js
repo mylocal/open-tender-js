@@ -1,4 +1,10 @@
-import { parseISO, add, sub, differenceInMinutes } from 'date-fns'
+import {
+  parseISO,
+  add,
+  sub,
+  differenceInMinutes,
+  differenceInSeconds,
+} from 'date-fns'
 import { format, toDate, zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
 
 /* CONSTANTS */
@@ -39,6 +45,21 @@ export const makeWeekday = (date = new Date()) => {
 
 export const minutesLeft = (start, end) => {
   return Math.max(differenceInMinutes(start, end), 0)
+}
+
+export const secondsLeft = (start, end) => {
+  return Math.max(differenceInSeconds(start, end), 0)
+}
+
+export const secondsToTime = (seconds) => {
+  const mins = Math.floor(seconds / 60)
+  const secs = `${seconds % 60}`.padStart(2, '0')
+  return `${mins}:${secs}`
+}
+
+export const timeLeft = (start, end) => {
+  const seconds = secondsLeft(start, end)
+  return secondsToTime(seconds)
 }
 
 export const dateForWeekday = (weekday) => {
