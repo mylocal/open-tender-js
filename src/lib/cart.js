@@ -118,7 +118,7 @@ const makeOrderMsg = (
     const seconds = firstTime.utc ? isoToDate(firstTime.utc).getSeconds() : 0
     const estimate = requestedAt !== 'asap' && seconds ? 'at about' : 'at'
     readableDate =
-      requestedAt === 'asap'
+      requestedAt === 'asap' && firstTime.has_asap
         ? `in about ${waitTime} minutes`
         : makeReadableDateStrFromIso(firstTime.utc, tz, true)
             .replace('Today', 'today')
@@ -163,7 +163,8 @@ export const makeRevenueCenterMsg = (
   requestedAt,
   statusMessages
 ) => {
-  const { first_times, order_times, wait_times } = revenueCenter.settings
+  const settings = revenueCenter.settings || revenueCenter
+  const { first_times, order_times, wait_times } = settings
   const tz = timezoneMap[revenueCenter.timezone]
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   const firstTime = first_times ? first_times[st] : null

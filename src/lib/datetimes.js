@@ -225,14 +225,10 @@ export const makeEstimatedTime = (
   serviceType,
   verbose = false
 ) => {
-  if (
-    requestedAt !== 'asap' ||
-    !serviceType ||
-    !revenueCenter ||
-    !revenueCenter.settings
-  )
-    return null
-  const { first_times } = revenueCenter.settings
+  if (requestedAt !== 'asap' || !serviceType || !revenueCenter) return null
+  const settings = revenueCenter.settings || revenueCenter
+  const { first_times } = settings
+  if (!first_times) return null
   const st = serviceType === 'WALKIN' ? 'PICKUP' : serviceType
   const firstTime = first_times[st]
   if (firstTime.date === todayDate()) {
@@ -533,7 +529,8 @@ export const makeFirstRequestedAt = (
   serviceType,
   requestedAt
 ) => {
-  const { timezone, settings, revenue_center_type } = revenueCenter
+  const { timezone, revenue_center_type } = revenueCenter
+  const settings = revenueCenter.settings || revenueCenter
   if (revenue_center_type === 'POS') return 'asap'
   const tz = timezoneMap[timezone]
   requestedAt = requestedAt || (revenue_center_type === 'OLO' ? 'asap' : null)
@@ -541,7 +538,8 @@ export const makeFirstRequestedAt = (
 }
 
 export const makeFirstTimes = (revenueCenter, serviceType, requestedAt) => {
-  const { timezone, settings } = revenueCenter
+  const { timezone } = revenueCenter
+  const settings = revenueCenter.settings || revenueCenter
   const tz = timezoneMap[timezone]
   const otherServiceType = serviceType === 'DELIVERY' ? 'PICKUP' : 'DELIVERY'
   const current = makeFirstTime(settings, tz, serviceType, requestedAt)
@@ -585,7 +583,8 @@ export const getFirstTime = (settings, serviceType, tz) => {
 }
 
 export const makeGroupOrderTime = (revenueCenter, serviceType, requestedAt) => {
-  const { settings, timezone } = revenueCenter
+  const { timezone } = revenueCenter
+  const settings = revenueCenter.settings || revenueCenter
   const tz = timezoneMap[timezone]
   const { first_times, order_times, wait_times, group_ordering } = settings
   const { prep_time, lead_time } = group_ordering
