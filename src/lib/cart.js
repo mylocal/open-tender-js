@@ -118,7 +118,7 @@ const makeOrderMsg = (
     const seconds = firstTime.utc ? isoToDate(firstTime.utc).getSeconds() : 0
     const estimate = requestedAt !== 'asap' && seconds ? 'at about' : 'at'
     readableDate =
-      requestedAt === 'asap'
+      requestedAt === 'asap' && firstTime.has_asap
         ? `in about ${waitTime} minutes`
         : makeReadableDateStrFromIso(firstTime.utc, tz, true)
             .replace('Today', 'today')
