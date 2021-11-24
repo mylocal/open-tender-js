@@ -346,6 +346,19 @@ export const makeTimeIntervals = (
   return dates.map((d) => ({ label: format(d, 'h:mm aa'), value: d }))
 }
 
+export const makeDates = (startDateStr, days, fmt = HUMAN_DATE) => {
+  const startDate = dateStrToDate(startDateStr)
+  let dateArray = [{ label: 'Today', value: format(startDate, DATE) }]
+  if (!days) return dateArray
+  for (let step = 0; step < days; step++) {
+    const nextDate = add(startDate, { days: step + 1 })
+    const label = step === 0 ? 'Tomorrow' : format(nextDate, fmt)
+    const value = format(nextDate, DATE)
+    dateArray.push({ label, value })
+  }
+  return dateArray
+}
+
 export const makeDatepickerArgs = (
   requestedAtDate,
   weekdayTimes,
