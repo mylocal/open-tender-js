@@ -174,6 +174,10 @@ export const dateStrToZonedDate = (str, tz) => {
   return toDate(str, { timeZone: tz })
 }
 
+export const dateStrToZonedWeekday = (str, tz) => {
+  return makeWeekday(dateStrToZonedDate(str, tz))
+}
+
 export const formatDateStr = (str, fmt = HUMAN_DATE) => {
   return str ? format(toDate(str), fmt) : null
 }
@@ -348,15 +352,47 @@ export const makeTimeIntervals = (
 
 export const makeDates = (startDateStr, days, fmt = HUMAN_DATE) => {
   const startDate = dateStrToDate(startDateStr)
-  let dateArray = [{ label: 'Today', value: format(startDate, DATE) }]
-  if (!days) return dateArray
-  for (let step = 0; step < days; step++) {
-    const nextDate = add(startDate, { days: step + 1 })
-    const label = step === 0 ? 'Tomorrow' : format(nextDate, fmt)
+  let dateArray = []
+  for (let step = 0; step < days + 1; step++) {
+    const nextDate = add(startDate, { days: step })
     const value = format(nextDate, DATE)
+    const label =
+      value === todayDate()
+        ? 'Today'
+        : value === tomorrowDate()
+        ? 'Tomorrow'
+        : format(nextDate, fmt)
     dateArray.push({ label, value })
   }
   return dateArray
+}
+
+export const makeTimes = (
+  date,
+  firstTime,
+  validTimes,
+  holidays,
+  serviceType,
+  tz
+) => {
+  const weekday = dateStrToZonedWeekday(date, tz)
+  let times = null
+  const holiday = holidays ? holidays[date] : null
+  if (holiday) {
+    times = holiday[serviceType] ? holiday[serviceType].valid_times : null
+  } else {
+    times = validTimes[serviceType] ? validTimes[serviceType][weekday] : null
+  }
+  if (!times) return null
+  // if first available date, remove times before first available time
+  if (date === firstTime.date) {
+    times = times.filter((t) => t.minutes >= firstTime.minutes)
+  }
+  return times.map((t) => ({
+    name: t.time,
+    value: t.minutes,
+    disabled: !t.is_orderable,
+  }))
 }
 
 export const makeDatepickerArgs = (
