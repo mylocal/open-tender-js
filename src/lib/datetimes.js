@@ -196,6 +196,21 @@ export const formatTimeStr = (str) => {
   return [newPart1, part2].join('-')
 }
 
+export const dateStrMinutesToIso = (dateStr, minutes, tz) => {
+  const orderDate = dateStrToZonedDate(dateStr, tz)
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  const orderDateTime = setTimeForDate(orderDate, hours, mins)
+  return cleanISOString(orderDateTime)
+}
+
+export const isoToDateStrMinutes = (iso, tz) => {
+  const dateObj = isoToDate(iso, tz)
+  const minutes = getMinutesfromDate(dateObj)
+  const date = format(dateObj, DATE)
+  return { date, minutes }
+}
+
 export const makeReadableDateStrFromIso = (iso, tz, verbose = false) => {
   if (!iso || iso.toLowerCase() === 'asap') return 'ASAP'
   const date = utcToZonedTime(parseISO(iso), tz)
