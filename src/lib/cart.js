@@ -850,6 +850,19 @@ export const prepareOrder = (data) => {
     if (details.person_count)
       details.person_count = parseInt(details.person_count) || null
     if (data.deviceType) details.device_type = data.deviceType
+    if (data.table || data.prepType) {
+      const prepType = data.prepType
+        ? data.prepType
+        : data.table
+        ? 'EAT_HERE'
+        : 'TAKE_OUT'
+      details.notes_internal =
+        prepType === 'EAT_HERE'
+          ? data.table
+            ? `DINE IN -- TABLE ${data.table}`
+            : 'DINE IN'
+          : 'TAKE OUT'
+    }
     order.details = { ...details }
   }
   if (data.surcharges) order.surcharges = data.surcharges
