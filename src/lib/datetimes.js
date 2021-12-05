@@ -174,8 +174,8 @@ export const dateStrToZonedDate = (str, tz) => {
   return toDate(str, { timeZone: tz })
 }
 
-export const dateStrToZonedWeekday = (str, tz) => {
-  return makeWeekday(dateStrToZonedDate(str, tz))
+export const dateStrToZonedWeekday = (str) => {
+  return makeWeekday(toDate(str))
 }
 
 export const formatDateStr = (str, fmt = HUMAN_DATE) => {
@@ -196,8 +196,8 @@ export const formatTimeStr = (str) => {
   return [newPart1, part2].join('-')
 }
 
-export const dateStrMinutesToIso = (dateStr, minutes, tz) => {
-  const orderDate = dateStrToZonedDate(dateStr, tz)
+export const dateStrMinutesToIso = (dateStr, minutes) => {
+  const orderDate = toDate(dateStr)
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
   const orderDateTime = setTimeForDate(orderDate, hours, mins)
@@ -387,10 +387,9 @@ export const makeTimes = (
   firstTime,
   validTimes,
   holidays,
-  serviceType,
-  tz
+  serviceType
 ) => {
-  const weekday = dateStrToZonedWeekday(date, tz)
+  const weekday = dateStrToZonedWeekday(date)
   let times = null
   const holiday = holidays ? holidays[date] : null
   if (holiday) {
