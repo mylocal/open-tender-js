@@ -69,6 +69,33 @@ export const makePhone = (phone) => {
   return p
 }
 
+export const validatePhone = (phone) => {
+  if (!phone) return false
+  return phone.match(/\d/g).length === 10
+}
+
+export const validateEmail = (email) => {
+  const re =
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return re.test(email)
+}
+
+export const checkEmpty = (data) => {
+  if (isEmpty(data)) return true
+  return Object.values(data).filter((i) => !i).length > 0
+}
+
+export const checkGuestData = (data, email) => {
+  const { first_name, last_name, phone } = data
+  const guestData = { first_name, last_name, phone, email }
+  const validPhone = validatePhone(phone) ? phone : null
+  const guestIncomplete = checkEmpty({
+    ...guestData,
+    phone: validPhone,
+  })
+  return { guestData, guestIncomplete }
+}
+
 export const makeRandomNumberString = () =>
   Math.floor(Math.random() * 1000000000).toString()
 
