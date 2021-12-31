@@ -79,7 +79,7 @@ const pointInPolygon = (point, vs) => {
   return inside
 }
 
-const inZone = (address, polygon) => {
+export const inZone = (address, polygon) => {
   const point = [address.lat, address.lng]
   return pointInPolygon(point, polygon)
 }
