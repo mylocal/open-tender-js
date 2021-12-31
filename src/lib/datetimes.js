@@ -222,7 +222,7 @@ export const makeReadableDateStrFromIso = (iso, tz, verbose = false) => {
     return `${verbose ? 'Tomorrow' : 'Tmrw'} @ ${timeString}`
   } else {
     return `${
-      verbose ? format(date, 'EEEE, MMMM d') : format(date, 'M/d')
+      verbose ? format(date, 'EEE, MMM d') : format(date, 'M/d')
     } @ ${timeString}`
   }
 }
