@@ -311,8 +311,11 @@ export const makeOrderItem = (
     price: parseFloat(item.price),
     increment: item.increment,
     max: item.max_quantity,
+    menu_id: item.menu_id,
     min: item.min_quantity,
+    parent_available: item.parentAvailable,
     points: hasPoints ? item.points || null : null,
+    section_id: item.section_id,
     upsellItems: item.upsell_items || [],
     similarItems: item.similar_items || [],
   }
