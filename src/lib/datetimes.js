@@ -196,12 +196,12 @@ export const formatTimeStr = (str) => {
   return [newPart1, part2].join('-')
 }
 
-export const dateStrMinutesToIso = (dateStr, minutes) => {
-  const orderDate = toDate(dateStr)
+export const dateStrMinutesToIso = (dateStr, minutes, tz) => {
+  const orderDate = tz ? toDate(dateStr, { timezone: tz }) : toDate(dateStr)
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
   const orderDateTime = setTimeForDate(orderDate, hours, mins)
-  return cleanISOString(orderDateTime)
+  return tz ? dateToIso(orderDateTime, tz) : cleanISOString(orderDateTime)
 }
 
 export const isoToDateStrMinutes = (iso, tz) => {
