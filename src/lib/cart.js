@@ -620,34 +620,46 @@ export const addItem = (cart, item) => {
   return { cart, cartCounts }
 }
 
+const getItemRealIndex = (cart, index) =>
+  cart.findIndex(item => item.index === index)
+
 export const removeItem = (cart, index) => {
-  cart.splice(index, 1)
-  cart = cart.map((i, index) => ({ ...i, index: index }))
+  const realIndex = getItemRealIndex(cart, index)
+  if(realIndex > -1){
+    cart.splice(realIndex, 1)
+    cart = cart.map((i, _index) => ({ ...i, index: _index }))
+  }
   const cartCounts = calcCartCounts(cart)
   return { cart, cartCounts }
 }
 
 export const incrementItem = (cart, index) => {
-  const item = cart[index]
-  if (item.max === 0 || item.quantity < item.max) {
-    let newQuantity = item.quantity + item.increment
-    newQuantity = item.max === 0 ? newQuantity : Math.min(item.max, newQuantity)
-    const newItem = calcPrices({ ...item, quantity: newQuantity })
-    cart[index] = newItem
+  const realIndex = getItemRealIndex(cart, index)
+  if(realIndex > -1){
+    const item = cart[realIndex]
+    if (item.max === 0 || item.quantity < item.max) {
+      let newQuantity = item.quantity + item.increment
+      newQuantity = item.max === 0 ? newQuantity : Math.min(item.max, newQuantity)
+      const newItem = calcPrices({ ...item, quantity: newQuantity })
+      cart[realIndex] = newItem
+    }
   }
   const cartCounts = calcCartCounts(cart)
   return { cart, cartCounts }
 }
 
 export const decrementItem = (cart, index) => {
-  const item = cart[index]
-  const newQuantity = Math.max(item.quantity - item.increment, 0)
-  if (newQuantity === 0 || newQuantity < item.min) {
-    cart.splice(index, 1)
-    cart = cart.map((i, index) => ({ ...i, index: index }))
-  } else {
-    const newItem = calcPrices({ ...item, quantity: newQuantity })
-    cart[index] = newItem
+  const realIndex = getItemRealIndex(cart, index)
+  if(realIndex > -1){
+    const item = cart[realIndex]
+    const newQuantity = Math.max(item.quantity - item.increment, 0)
+    if (newQuantity === 0 || newQuantity < item.min) {
+      cart.splice(realIndex, 1)
+      cart = cart.map((i, _index) => ({ ...i, index: _index }))
+    } else {
+      const newItem = calcPrices({ ...item, quantity: newQuantity })
+      cart[realIndex] = newItem
+    }
   }
   const cartCounts = calcCartCounts(cart)
   return { cart, cartCounts }
