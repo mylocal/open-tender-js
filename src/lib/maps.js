@@ -129,8 +129,8 @@ export const makePickupRevenueCenters = (
   const hasPickup = revenueCenters
     .filter((i) =>
       i.settings
-        ? i.settings.service_types.includes('PICKUP')
-        : i.service_types.includes('PICKUP')
+        ? i.settings.service_types?.includes('PICKUP') || false
+        : i.service_types?.includes('PICKUP') || false
     )
     .filter((i) => !i.distance || i.distance < maxDistance)
   return sortRevenueCenters(hasPickup)
@@ -143,8 +143,8 @@ export const makeWalkinRevenueCenters = (
   const hasWalkin = revenueCenters
     .filter((i) =>
       i.settings
-        ? i.settings.service_types.includes('WALKIN')
-        : i.service_types.includes('WALKIN')
+        ? i.settings.service_types?.includes('WALKIN') || false
+        : i.service_types?.includes('WALKIN') || false
     )
     .filter((i) => !i.distance || i.distance < maxDistance)
   return sortRevenueCenters(hasWalkin)
@@ -153,8 +153,8 @@ export const makeWalkinRevenueCenters = (
 export const makeDeliveryRevenueCenters = (revenueCenters) => {
   const hasDelivery = revenueCenters.filter((i) =>
     i.settings
-      ? i.settings.service_types.includes('DELIVERY')
-      : i.service_types.includes('DELIVERY')
+      ? i.settings.service_types?.includes('DELIVERY') || false
+      : i.service_types?.includes('DELIVERY') || false
   )
   const sorted = sortRevenueCenters(hasDelivery, true)
   return sorted.filter((i) => i.inZone)
