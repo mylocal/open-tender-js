@@ -122,16 +122,19 @@ export const calcMinDistance = (revenueCenters, maxDistance = MAX_DISTANCE) => {
   return withDistance ? Math.min(...withDistance) : maxDistance
 }
 
+export const checkServiceType = (revenueCenter, serviceType) => {
+  const { settings, service_types } = revenueCenter
+  const serviceTypes = settings ? settings.service_types : service_types
+  if (!serviceTypes) return false
+  return serviceTypes.includes(serviceType)
+}
+
 export const makePickupRevenueCenters = (
   revenueCenters,
   maxDistance = MAX_DISTANCE
 ) => {
   const hasPickup = revenueCenters
-    .filter((i) =>
-      i.settings
-        ? i.settings.service_types?.includes('PICKUP') || false
-        : i.service_types?.includes('PICKUP') || false
-    )
+    .filter((i) => checkServiceType(i, 'PICKUP'))
     .filter((i) => !i.distance || i.distance < maxDistance)
   return sortRevenueCenters(hasPickup)
 }
@@ -141,20 +144,14 @@ export const makeWalkinRevenueCenters = (
   maxDistance = MAX_DISTANCE
 ) => {
   const hasWalkin = revenueCenters
-    .filter((i) =>
-      i.settings
-        ? i.settings.service_types?.includes('WALKIN') || false
-        : i.service_types?.includes('WALKIN') || false
-    )
+    .filter((i) => checkServiceType(i, 'WALKIN'))
     .filter((i) => !i.distance || i.distance < maxDistance)
   return sortRevenueCenters(hasWalkin)
 }
 
 export const makeDeliveryRevenueCenters = (revenueCenters) => {
   const hasDelivery = revenueCenters.filter((i) =>
-    i.settings
-      ? i.settings.service_types?.includes('DELIVERY') || false
-      : i.service_types?.includes('DELIVERY') || false
+    checkServiceType(i, 'DELIVERY')
   )
   const sorted = sortRevenueCenters(hasDelivery, true)
   return sorted.filter((i) => i.inZone)
