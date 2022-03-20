@@ -226,6 +226,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         min: o.min_quantity,
         isSoldOut: isSoldOut,
         points: o.points || 0,
+        isSnoozed: o.isSnoozed,
       }
       return option
     })
