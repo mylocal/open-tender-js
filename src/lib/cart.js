@@ -621,11 +621,11 @@ export const addItem = (cart, item) => {
 }
 
 const getItemRealIndex = (cart, index) =>
-  cart.findIndex(item => item.index === index)
+  cart.findIndex((item) => item.index === index)
 
 export const removeItem = (cart, index) => {
   const realIndex = getItemRealIndex(cart, index)
-  if(realIndex > -1){
+  if (realIndex > -1) {
     cart.splice(realIndex, 1)
     cart = cart.map((i, _index) => ({ ...i, index: _index }))
   }
@@ -635,11 +635,12 @@ export const removeItem = (cart, index) => {
 
 export const incrementItem = (cart, index) => {
   const realIndex = getItemRealIndex(cart, index)
-  if(realIndex > -1){
+  if (realIndex > -1) {
     const item = cart[realIndex]
     if (item.max === 0 || item.quantity < item.max) {
       let newQuantity = item.quantity + item.increment
-      newQuantity = item.max === 0 ? newQuantity : Math.min(item.max, newQuantity)
+      newQuantity =
+        item.max === 0 ? newQuantity : Math.min(item.max, newQuantity)
       const newItem = calcPrices({ ...item, quantity: newQuantity })
       cart[realIndex] = newItem
     }
@@ -650,7 +651,7 @@ export const incrementItem = (cart, index) => {
 
 export const decrementItem = (cart, index) => {
   const realIndex = getItemRealIndex(cart, index)
-  if(realIndex > -1){
+  if (realIndex > -1) {
     const item = cart[realIndex]
     const newQuantity = Math.max(item.quantity - item.increment, 0)
     if (newQuantity === 0 || newQuantity < item.min) {

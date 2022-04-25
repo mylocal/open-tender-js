@@ -53,8 +53,7 @@ export const makeStatus = (tiers, status, points) => {
       ? `${formatDollars(i.threshold, '', 0)}`
       : `${formatQuantity(i.threshold)}`,
   }))
-  const daysMsg =
-    status.days === 7300 ? 'all-time' : `in the last ${status.days} days`
+  const daysMsg = status.days === 7300 ? 'all-time' : `last ${status.days} days`
   const progressAmt = !points
     ? formatDollars(status.progress, '', 0)
     : formatQuantity(status.progress)
