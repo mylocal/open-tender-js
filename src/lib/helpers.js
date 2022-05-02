@@ -74,6 +74,29 @@ export const validatePhone = (phone) => {
   return phone.match(/\d/g).length === 10
 }
 
+export const makeBirthDate = (birthDate) => {
+  if (!birthDate) return ''
+  let b = birthDate.replace(/\D/g, '')
+  if (b.length > 4) {
+    return `${b.slice(0, 2)}/${b.slice(2, 4)}/${b.slice(4, 8)}`
+  } else if (b.length > 2) {
+    return `${b.slice(0, 2)}/${b.slice(2, 4)}`
+  }
+  return b
+}
+
+export const slashesToDashes = (birthDate) => {
+  if (!birthDate) return null
+  const parts = birthDate.split('/')
+  return `${parts[2] || ''}-${parts[0] || ''}-${parts[1] || ''}`
+}
+
+export const dashesToSlashes = (birthDate) => {
+  if (!birthDate) return null
+  const parts = birthDate.split('-')
+  return `${parts[1] || ''}/${parts[2] || ''}/${parts[0] || ''}`
+}
+
 export const validateEmail = (email) => {
   const re =
     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/

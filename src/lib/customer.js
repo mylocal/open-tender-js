@@ -1,4 +1,5 @@
 import { parseISO } from 'date-fns'
+import { dashesToSlashes } from './helpers'
 
 export const profileFields = [
   'customer_id',
@@ -7,14 +8,20 @@ export const profileFields = [
   'email',
   'phone',
   'company',
-  'accepts_marketing',
-  'order_notifications',
+  'birth_date',
+  'gender',
   'is_verified',
 ]
 
 export const makeCustomerProfile = (customer) => {
   return profileFields.reduce(
-    (obj, field) => ({ ...obj, [field]: customer[field] }),
+    (obj, field) => ({
+      ...obj,
+      [field]:
+        field === 'birth_date'
+          ? dashesToSlashes(customer[field])
+          : customer[field],
+    }),
     {}
   )
 }
