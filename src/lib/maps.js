@@ -325,10 +325,12 @@ export const LOCATIONS_MESSAGES = {
 }
 
 export const renameLocation = (str, names) => {
-  if (!isString(str)) return str
+  if (!isString(str) || !names || !names.length) return str
   const [singular, plural] = names
-  return str
-    .replace('1 locations', '1 location')
+  const newStr = str.startsWith('1 locations')
+    ? str.replace('1 locations', '1 location')
+    : str
+  return newStr
     .replace('locations', plural)
     .replace('location', singular)
     .replace(' a a', ' an a')
