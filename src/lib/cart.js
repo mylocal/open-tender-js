@@ -15,14 +15,22 @@ export const displayPrice = (price) => {
   return parseFloat(price).toFixed(2)
 }
 
-export const makeDisplayPrice = (item) => {
+export const makeDisplayPrice = (item, showDefault = true) => {
   const sizeGroup =
     item.option_groups && item.option_groups.find((i) => i.is_size)
   if (sizeGroup) {
-    const prices = sizeGroup.option_items.map(
-      (i) => `$${displayPrice(i.price)}`
-    )
-    return prices.join(' / ')
+    if (showDefault) {
+      const defaultOption = sizeGroup.option_items.find((i) => i.is_default)
+      const defaultPrice = defaultOption
+        ? defaultOption.price
+        : sizeGroup.option_items[0].price
+      return `$${displayPrice(defaultPrice)}`
+    } else {
+      const prices = sizeGroup.option_items.map(
+        (i) => `$${displayPrice(i.price)}`
+      )
+      return prices.join(' / ')
+    }
   }
   const { totalPrice } = makeOrderItem(item)
   return totalPrice > 0 ? `$${displayPrice(totalPrice)}` : null
