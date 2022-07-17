@@ -141,3 +141,17 @@ export const getHeight = () => {
     document.documentElement.clientHeight
   )
 }
+
+export const makeImageUrl = (images, isMobile) => {
+  return images.find(
+    (i) => i.type === (isMobile ? 'SECONDARY_IMAGE' : 'FEATURED_IMAGE')
+  ).url
+}
+
+export const makeSlides = (items, isMobile) => {
+  if (!items || !items.length) return null
+  return items.map((i) => ({
+    ...i,
+    imageUrl: makeImageUrl(i.images, isMobile),
+  }))
+}

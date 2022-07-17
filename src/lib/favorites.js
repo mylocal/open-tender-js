@@ -51,6 +51,17 @@ export const prepareMenuItem = (
   }
 }
 
+export const makeFeatured = (categories) => {
+  const flatCategories = categories.reduce((arr, cat) => {
+    return [...arr, cat, ...(cat.children || [])]
+  }, [])
+  const featured = flatCategories.reduce((arr, category) => {
+    const items = category.items.filter((i) => i.featured_position)
+    return [...arr, ...items]
+  }, [])
+  return featured.sort((a, b) => a.featured_position - b.featured_position)
+}
+
 export const makeMenuItemLookup = (categories) => {
   const cats = categories.reduce((arr, cat) => {
     return [...arr, cat, ...(cat.children || [])]
