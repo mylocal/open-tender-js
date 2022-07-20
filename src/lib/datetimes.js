@@ -387,7 +387,8 @@ export const makeTimes = (
   firstTime,
   validTimes,
   holidays,
-  serviceType
+  serviceType,
+  leadTime = 0
 ) => {
   const weekday = dateStrToZonedWeekday(date)
   let times = null
@@ -400,7 +401,7 @@ export const makeTimes = (
   if (!times) return null
   // if first available date, remove times before first available time
   if (date === firstTime.date) {
-    times = times.filter((t) => t.minutes >= firstTime.minutes)
+    times = times.filter((t) => t.minutes >= firstTime.minutes + leadTime)
   }
   return times.map((t) => ({
     name: t.time,

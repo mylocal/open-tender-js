@@ -238,10 +238,14 @@ export const makeDisplayedRevenueCenters = (
   serviceType,
   address,
   geoLatLng,
-  maxDistance
+  maxDistance,
+  isGroupOrder
 ) => {
+  const filtered = isGroupOrder
+    ? revenueCenters.filter((i) => i.group_ordering)
+    : revenueCenters
   if (serviceType === 'WALKIN') {
-    const displayed = makeWalkinRevenueCenters(revenueCenters, maxDistance)
+    const displayed = makeWalkinRevenueCenters(filtered, maxDistance)
     const minDistance = calcMinDistance(displayed)
     const count = displayed.length
     const { title, msg } = makeWalkinMessaging(
@@ -254,7 +258,7 @@ export const makeDisplayedRevenueCenters = (
     const error = null
     return { title, msg, error, displayed }
   } else if (serviceType === 'PICKUP') {
-    const displayed = makePickupRevenueCenters(revenueCenters, maxDistance)
+    const displayed = makePickupRevenueCenters(filtered, maxDistance)
     const minDistance = calcMinDistance(displayed)
     const count = displayed.length
     const { title, msg } = makePickupMesssaging(
@@ -267,7 +271,7 @@ export const makeDisplayedRevenueCenters = (
     const error = null
     return { title, msg, error, displayed }
   } else {
-    const displayed = makeDeliveryRevenueCenters(revenueCenters)
+    const displayed = makeDeliveryRevenueCenters(filtered)
     const count = displayed.length
     const { title, msg, error } = makeDeliveryMesssaging(address, count)
     return { title, msg, error, displayed }
