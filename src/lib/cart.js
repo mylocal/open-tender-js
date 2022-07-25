@@ -490,7 +490,9 @@ export const makeItemSignature = (item) => {
     ? []
     : item.groups
         .reduce((arr, group) => {
-          const ids = group.options.map((o) => o.id)
+          const ids = group.options
+            .filter((o) => o.quantity > 0)
+            .map((o) => o.id)
           return [...arr, ...ids]
         }, [])
         .sort((a, b) => a - b)
