@@ -291,6 +291,37 @@ export const calcPrices = (item) => {
   return { ...item, groups, totalPrice, totalPoints, totalCals }
 }
 
+const nutritionKeys = [
+  'calories',
+  'cholesterol',
+  'dietary_fiber',
+  'protein',
+  'saturated_fat',
+  'sodium',
+  'sugars',
+  'total_carbs',
+  'total_fat',
+  'trans_fat',
+]
+
+export const calcNutrition = (item) => {
+  const { nutritionalInfo, groups } = item
+  let nutrition = nutritionalInfo ? { ...nutritionalInfo } : {}
+  const options = groups.reduce((arr, g) => {
+    return [...arr, ...g.options.filter((o) => o.quantity > 0)]
+  }, [])
+  options.forEach((o) => {
+    nutritionKeys.forEach((key) => {
+      const optionVal = o.nutritionalInfo
+        ? parseInt(o.nutritionalInfo[key]) || 0
+        : 0
+      const itemVal = parseInt(nutrition[key]) || 0
+      nutrition = { ...nutrition, [key]: itemVal + optionVal }
+    })
+  })
+  return nutrition
+}
+
 export const makeOrderItem = (
   item,
   isEdit,
