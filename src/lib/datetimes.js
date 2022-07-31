@@ -147,9 +147,11 @@ export const adjustZonedIso = (zonedIso, tz, adjustment) => {
 export const dateToZonedDateStr = (
   date,
   tz,
-  fmt = "yyyy-MM-dd'T'HH:mm:ssXXX"
+  fmt = "yyyy-MM-dd'T'HH:mm:ssXXX",
+  days = 0
 ) => {
-  const zoned = utcToZonedTime(date, tz)
+  const adjustedDate = add(date, { days: days })
+  const zoned = utcToZonedTime(adjustedDate, tz)
   return format(zoned, fmt, { timeZone: tz })
 }
 
@@ -736,4 +738,19 @@ export const formatTimeList = (dateStr, tz, includeDate) => {
   const date = isoToDate(dateStr, tz)
   const fmt = includeDate ? 'MMM d, h:mma' : 'h:mma'
   return format(date, fmt).replace('AM', 'am').replace('PM', 'pm')
+}
+
+export const makeCartDateStr = (requestedAt, tz, waitTime) => {
+  if (requestedAt === 'asap') return `Ready in about ${waitTime} minutes`
+  const requestedDateStr = isoToDateStr(requestedAt, tz, 'yyyy-MM-dd')
+  const now = new Date()
+  const today = dateToZonedDateStr(now, tz, 'yyyy-MM-dd')
+  const tomorrow = dateToZonedDateStr(now, tz, 'yyyy-MM-dd', 1)
+  const isToday = requestedDateStr === today
+  const isTomorrow = requestedDateStr === tomorrow
+  const timeStr = isoToDateStr(requestedAt, tz, 'hh:mma').toLowerCase()
+  const dateStr = isoToDateStr(requestedAt, tz, 'EEE, MMM dd')
+  if (isToday) return `Ready by ${timeStr}`
+  if (isTomorrow) return `Ready by ${timeStr} tomorrow`
+  return `Ready by ${timeStr} on ${dateStr}`
 }
