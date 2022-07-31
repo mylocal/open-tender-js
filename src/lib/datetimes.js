@@ -748,7 +748,7 @@ export const makeCartDateStr = (requestedAt, tz, waitTime) => {
   const tomorrow = dateToZonedDateStr(now, tz, 'yyyy-MM-dd', 1)
   const isToday = requestedDateStr === today
   const isTomorrow = requestedDateStr === tomorrow
-  const timeStr = isoToDateStr(requestedAt, tz, 'hh:mma').toLowerCase()
+  const timeStr = isoToDateStr(requestedAt, tz, 'h:mma').toLowerCase()
   const dateStr = isoToDateStr(requestedAt, tz, 'EEE, MMM dd')
   if (isToday) return `Ready by ${timeStr}`
   if (isTomorrow) return `Ready by ${timeStr} tomorrow`
