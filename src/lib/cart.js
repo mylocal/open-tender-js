@@ -438,7 +438,7 @@ const rehydrateAddress = (address) => {
 const rehydrateSurcharges = (surcharges) => {
   return surcharges
     .filter((i) => i.is_optional)
-    .map((i) => ({ id: i.surcharge_id }))
+    .map((i) => ({ id: i.surcharge_id || i.id }))
 }
 
 const rehydrateDiscounts = (discounts) => {
