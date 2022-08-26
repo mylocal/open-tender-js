@@ -1,4 +1,4 @@
-import { isEmpty } from './helpers'
+import { isEmpty, isString } from './helpers'
 
 export const handleRespError = (err) => {
   const error = typeof err === 'string' ? { detail: err } : err
@@ -70,7 +70,10 @@ export const handleCheckoutErrors = (errors, asMessages = true) => {
       if (!index) {
         return { ...obj, [entity]: err }
       } else if (!field) {
-        const newEntity = { ...existingEntity, [index]: err }
+        const existing = isString(existingEntity)
+          ? { [entity]: existingEntity }
+          : existingEntity
+        const newEntity = { ...existing, [index]: err }
         return { ...obj, [entity]: newEntity }
       } else {
         if (existingEntity) {
