@@ -367,6 +367,17 @@ export const makeOrderItem = (
   return pricedItem
 }
 
+export const makeUpsellItems = (itemIds, itemLookup) => {
+  return itemIds
+    .map((id) => itemLookup[id])
+    .filter((i) => i)
+    .map((i) => makeOrderItem(i))
+    .filter((i) => {
+      const belowMin = i.groups.filter((g) => !g.isSize && g.quantity < g.min)
+      return belowMin.length === 0
+    })
+}
+
 export const rehydrateOrderItem = (menuItem, simpleCartItem) => {
   const orderItem = makeOrderItem(menuItem, true, [], simpleCartItem)
   orderItem.quantity = simpleCartItem.quantity || 1
