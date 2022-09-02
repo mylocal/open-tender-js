@@ -76,7 +76,9 @@ export const updateTenders = (tenders, total) => {
 
 export const makeCreditName = (tender) => {
   const creditCard = tender.credit_card || tender
-  return `${creditCard.card_type_name} ending in ${creditCard.last4}`
+  return creditCard.last4
+    ? `${creditCard.card_type_name} ending in ${creditCard.last4}`
+    : creditCard.card_type_name
 }
 
 export const makeHouseAccountName = (tender) => {
