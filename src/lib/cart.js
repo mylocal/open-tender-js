@@ -933,6 +933,7 @@ export const prepareOrder = (data) => {
   if (data.surcharges) order.surcharges = data.surcharges
   if (data.discounts) order.discounts = data.discounts
   if (data.promoCodes) order.promo_codes = data.promoCodes
+  if (data.qrCodes) order.qr_codes = data.qrCodes
   if (data.points) order.points = data.points
   if (data.tip) order.tip = data.tip
   if (data.tenders) order.tenders = data.tenders
