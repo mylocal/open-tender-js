@@ -310,6 +310,8 @@ export const makeOrderItem = (
     groups: groups,
     quantity: item.min_quantity || 1 * item.increment,
     price: parseFloat(item.price),
+    priceType: item.priceType,
+    prices: item.prices,
     increment: item.increment,
     max: item.max_quantity,
     menu_id: item.menu_id,
