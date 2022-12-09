@@ -216,6 +216,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
       const cals = o.nutritional_info
         ? parseInt(o.nutritional_info.calories)
         : null
+      const groups = makeOrderItemGroups(o.option_groups, isEdit, soldOut)
       const option = {
         id: o.id,
         name: o.name,
@@ -228,6 +229,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         ingredients: o.ingredients,
         nutritionalInfo: o.nutritional_info,
         cals: isNaN(cals) ? null : cals,
+        groups: groups,
         price: parseFloat(o.price),
         quantity: quantity,
         isDefault: o.opt_is_default,
@@ -248,6 +250,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
       max: g.max_options,
       min: g.min_options,
       isSize: !!g.is_size,
+      isPizza: !!g.is_pizza,
       options: options,
     }
     return group
@@ -261,11 +264,18 @@ export const calcPrices = (item) => {
     const options = g.options.map((o) => {
       const includedRemaining = Math.max(g.included - groupQuantity, 0)
       const priceQuantity = Math.max(o.quantity - includedRemaining, 0)
+      // const option = {
+      //   ...o,
+      //   totalPrice: priceQuantity * o.price,
+      //   totalPoints: priceQuantity * o.points,
+      //   totalCals: o.cals ? o.quantity * o.cals : 0,
+      // }
+      const { totalPrice, totalPoints, totalCals } = calcPrices(o)
       const option = {
         ...o,
-        totalPrice: priceQuantity * o.price,
-        totalPoints: priceQuantity * o.points,
-        totalCals: o.cals ? o.quantity * o.cals : 0,
+        totalPrice: priceQuantity * totalPrice,
+        totalPoints: totalPoints ? priceQuantity * totalPoints : 0,
+        totalCals: totalCals ? o.quantity * totalCals : 0,
       }
       groupQuantity += o.quantity || 0
       return option
@@ -366,6 +376,7 @@ export const makeOrderItem = (
     if (notes) orderItem.notes = notes
   }
   const pricedItem = calcPrices(orderItem)
+  // console.log(item.name, pricedItem.totalPrice)
   return pricedItem
 }
 
@@ -720,18 +731,44 @@ export const decrementItem = (cart, index) => {
   return { cart, cartCounts }
 }
 
+// export const makeSimpleCart = (cart) => {
+//   const simpleCart = cart.map((i) => {
+//     const groups = i.groups.map((g) => {
+//       const options = g.options
+//         .filter((o) => o.quantity !== 0)
+//         .map((o) => ({ id: o.id, quantity: o.quantity }))
+//       return { id: g.id, options: options }
+//     })
+//     return {
+//       id: i.id,
+//       quantity: i.quantity,
+//       groups: groups,
+//       made_for: i.madeFor || '',
+//       notes: i.notes || '',
+//     }
+//   })
+//   return simpleCart
+// }
+
+const makeSimpleGroups = (groups) => {
+  return groups.map((g) => {
+    const options = g.options
+      .filter((o) => o.quantity !== 0)
+      .map((o) => ({
+        id: o.id,
+        quantity: o.quantity,
+        groups: makeSimpleGroups(o.groups || []),
+      }))
+    return { id: g.id, options: options }
+  })
+}
+
 export const makeSimpleCart = (cart) => {
   const simpleCart = cart.map((i) => {
-    const groups = i.groups.map((g) => {
-      const options = g.options
-        .filter((o) => o.quantity !== 0)
-        .map((o) => ({ id: o.id, quantity: o.quantity }))
-      return { id: g.id, options: options }
-    })
     return {
       id: i.id,
       quantity: i.quantity,
-      groups: groups,
+      groups: makeSimpleGroups(i.groups),
       made_for: i.madeFor || '',
       notes: i.notes || '',
     }
