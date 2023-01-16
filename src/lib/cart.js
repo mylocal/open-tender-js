@@ -264,19 +264,19 @@ export const calcPrices = (item) => {
     const options = g.options.map((o) => {
       const includedRemaining = Math.max(g.included - groupQuantity, 0)
       const priceQuantity = Math.max(o.quantity - includedRemaining, 0)
-      // const option = {
-      //   ...o,
-      //   totalPrice: priceQuantity * o.price,
-      //   totalPoints: priceQuantity * o.points,
-      //   totalCals: o.cals ? o.quantity * o.cals : 0,
-      // }
-      const { totalPrice, totalPoints, totalCals } = calcPrices(o)
       const option = {
         ...o,
-        totalPrice: priceQuantity * totalPrice,
-        totalPoints: totalPoints ? priceQuantity * totalPoints : 0,
-        totalCals: totalCals ? o.quantity * totalCals : 0,
+        totalPrice: priceQuantity * o.price,
+        totalPoints: priceQuantity * o.points,
+        totalCals: o.cals ? o.quantity * o.cals : 0,
       }
+      // const { totalPrice, totalPoints, totalCals } = calcPrices(o)
+      // const option = {
+      //   ...o,
+      //   totalPrice: priceQuantity * totalPrice,
+      //   totalPoints: totalPoints ? priceQuantity * totalPoints : 0,
+      //   totalCals: totalCals ? o.quantity * totalCals : 0,
+      // }
       groupQuantity += o.quantity || 0
       return option
     })
