@@ -198,7 +198,7 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
   if (!optionGroups) return []
   const groups = optionGroups.map((g) => {
     const options = g.option_items.map((o) => {
-      const isSoldOut = soldOut.includes(o.id)
+      const isSoldOut = o.soldOut;//soldOut.includes(o.soldOut)
       const quantity = isSoldOut
         ? 0
         : o.opt_is_default && !isEdit
