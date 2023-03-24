@@ -540,35 +540,30 @@ export const makeItemImageUrl = (images) => {
   )
 }
 
-export const makeItemSignature = (item) => {
-  const optionIds = !item.groups
-    ? []
-    : item.groups
-        .reduce((arr, group) => {
-          const ids = group.options
-            .filter((o) => o.quantity > 0)
-            .map((o) => o.id)
-          return [...arr, ...ids]
+const makeCartItemOptionIds = (groups) => {
+  if (!groups || !groups.length) return []
+  return groups
+    .reduce((arr, group) => {
+      const ids = group.options
+        .filter((o) => o.quantity > 0)
+        .reduce((optionsArr, o) => {
+          const optionArr = new Array(o.quantity)
+          optionArr.fill(o.id)
+          const nestedIds = makeCartItemOptionIds(o.groups)
+          return [...optionsArr, ...optionArr, ...nestedIds]
         }, [])
-        .sort((a, b) => a - b)
+      return [...arr, ...ids]
+    }, [])
+    .sort((a, b) => a - b)
+}
+
+export const makeItemSignature = (item) => {
+  const optionIds = makeCartItemOptionIds(item.groups)
   return [item.id, ...optionIds].join('.')
 }
 
 export const makeCartItemSignature = (item) => {
-  const optionIds = !item.groups
-    ? []
-    : item.groups
-        .reduce((arr, group) => {
-          const ids = group.options
-            .filter((o) => o.quantity > 0)
-            .reduce((optionsArr, o) => {
-              const optionArr = new Array(o.quantity)
-              optionArr.fill(o.id)
-              return [...optionsArr, ...optionArr]
-            }, [])
-          return [...arr, ...ids]
-        }, [])
-        .sort((a, b) => a - b)
+  const optionIds = makeCartItemOptionIds(item.groups)
   const itemIds = [item.id, ...optionIds].join('.')
   const signature = `${itemIds}.${item.madeFor}.${item.notes}`
   return signature
@@ -730,25 +725,6 @@ export const decrementItem = (cart, index) => {
   const cartCounts = calcCartCounts(cart)
   return { cart, cartCounts }
 }
-
-// export const makeSimpleCart = (cart) => {
-//   const simpleCart = cart.map((i) => {
-//     const groups = i.groups.map((g) => {
-//       const options = g.options
-//         .filter((o) => o.quantity !== 0)
-//         .map((o) => ({ id: o.id, quantity: o.quantity }))
-//       return { id: g.id, options: options }
-//     })
-//     return {
-//       id: i.id,
-//       quantity: i.quantity,
-//       groups: groups,
-//       made_for: i.madeFor || '',
-//       notes: i.notes || '',
-//     }
-//   })
-//   return simpleCart
-// }
 
 const makeSimpleGroups = (groups) => {
   return groups.map((g) => {
