@@ -17,7 +17,8 @@ export const profileFields = [
 ]
 
 export const makeCustomerProfile = (customer) => {
-  return profileFields.reduce(
+  console.log('customer', customer)
+  const profile = profileFields.reduce(
     (obj, field) => ({
       ...obj,
       [field]:
@@ -27,6 +28,8 @@ export const makeCustomerProfile = (customer) => {
     }),
     {}
   )
+  console.log('profile', profile)
+  return profile
 }
 
 export const getLastOrder = (orders) => {
