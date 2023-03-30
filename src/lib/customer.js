@@ -12,6 +12,8 @@ export const profileFields = [
   'gender',
   'is_verified',
   'is_notification_set',
+  'accepts_marketing',
+  'order_notifications',
 ]
 
 export const makeCustomerProfile = (customer) => {
