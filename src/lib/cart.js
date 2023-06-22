@@ -203,11 +203,16 @@ export const makeRevenueCenterMsg = (
   return { message, color }
 }
 
+export const checkSoldOut = (id, suspendUntil, soldOut = []) => {
+  if (soldOut.includes(id)) return true
+  return suspendUntil ? suspendUntil > Date.now() / 1000 : false
+}
+
 const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
   if (!optionGroups) return []
   const groups = optionGroups.map((g) => {
     const options = g.option_items.map((o) => {
-      const isSoldOut = soldOut.includes(o.id)
+      const isSoldOut = checkSoldOut(o.id, o.suspend_until, soldOut)
       const quantity = isSoldOut
         ? 0
         : o.opt_is_default && !isEdit
@@ -236,8 +241,9 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
         increment: o.increment,
         max: isSoldOut ? 0 : o.max_quantity,
         min: o.min_quantity,
-        isSoldOut: isSoldOut,
         points: o.points || 0,
+        isSoldOut: isSoldOut,
+        suspendUntil: o.suspend_until || null,
       }
       return option
     })
@@ -258,28 +264,80 @@ const makeOrderItemGroups = (optionGroups, isEdit, soldOut = []) => {
   return groups
 }
 
+export const makeOrderItem = (
+  item,
+  isEdit,
+  soldOut = [],
+  simpleItem,
+  hasPoints = false
+) => {
+  const groups = makeOrderItemGroups(item.option_groups, isEdit, soldOut)
+  const cals = item.nutritional_info
+    ? parseInt(item.nutritional_info.calories)
+    : null
+  const orderItem = {
+    id: item.id,
+    name: item.name,
+    shortName: item.short_name,
+    category: item.category_name,
+    description: item.description,
+    shortDescription: item.short_description,
+    imageUrl: item.large_image_url,
+    slug: item.slug,
+    allergens: convertStringToArray(item.allergens),
+    tags: convertStringToArray(item.tags),
+    ingredients: item.ingredients,
+    nutritionalInfo: item.nutritional_info,
+    cals: isNaN(cals) ? null : cals,
+    groups: groups,
+    quantity: item.min_quantity || 1 * item.increment,
+    price: parseFloat(item.price),
+    increment: item.increment,
+    max: item.max_quantity,
+    min: item.min_quantity,
+    points: hasPoints ? item.points || null : null,
+    upsellItems: item.upsell_items || [],
+    similarItems: item.similar_items || [],
+    suspendUntil: item.suspend_until || null,
+  }
+  if (simpleItem) {
+    const { cart_guest_id, customer_id, made_for, notes } = simpleItem
+    if (cart_guest_id) orderItem.cart_guest_id = cart_guest_id
+    if (customer_id) orderItem.customer_id = customer_id
+    if (made_for) orderItem.madeFor = made_for
+    if (notes) orderItem.notes = notes
+  }
+  const pricedItem = calcPrices(orderItem)
+  return pricedItem
+}
+
 export const calcPrices = (item) => {
   const groups = item.groups.map((g) => {
     let groupQuantity = 0
-    const options = g.options.map((o) => {
+    const optionsWithPrices = g.options.map((o, index) => {
+      return { ...calcPrices(o), index }
+    })
+    const sortedOptions = optionsWithPrices.sort((a, b) => {
+      const pricePerA = a.quantity ? a.totalPrice / a.quantity : 0
+      const pricePerB = b.quantity ? b.totalPrice / b.quantity : 0
+      return pricePerA - pricePerB
+    })
+    const pricedOptions = sortedOptions.map((o) => {
+      const pricePer = o.quantity ? o.totalPrice / o.quantity : 0
+      const pointsPer =
+        o.totalPoints && o.quantity ? o.totalPoints / o.quantity : 0
       const includedRemaining = Math.max(g.included - groupQuantity, 0)
       const priceQuantity = Math.max(o.quantity - includedRemaining, 0)
       const option = {
         ...o,
-        totalPrice: priceQuantity * o.price,
-        totalPoints: priceQuantity * o.points,
-        totalCals: o.cals ? o.quantity * o.cals : 0,
+        totalPrice: priceQuantity * pricePer,
+        totalPoints: priceQuantity * pointsPer,
+        totalCals: o.totalCals || 0,
       }
-      // const { totalPrice, totalPoints, totalCals } = calcPrices(o)
-      // const option = {
-      //   ...o,
-      //   totalPrice: priceQuantity * totalPrice,
-      //   totalPoints: totalPoints ? priceQuantity * totalPoints : 0,
-      //   totalCals: totalCals ? o.quantity * totalCals : 0,
-      // }
       groupQuantity += o.quantity || 0
       return option
     })
+    const options = pricedOptions.sort((a, b) => a.index - b.index)
     return { ...g, quantity: groupQuantity, options }
   })
   const optionsPrice = groups.reduce((t, g) => {
@@ -321,11 +379,13 @@ export const calcNutrition = (item) => {
   const options = groups.reduce((arr, g) => {
     return [...arr, ...g.options.filter((o) => o.quantity > 0)]
   }, [])
-  options.forEach((o) => {
+  options.forEach((option) => {
+    const optionNutrition = calcNutrition(option)
     nutritionKeys.forEach((key) => {
-      const optionVal = o.nutritionalInfo
-        ? parseInt(o.nutritionalInfo[key]) || 0
+      const optionPer = optionNutrition
+        ? parseInt(optionNutrition[key]) || 0
         : 0
+      const optionVal = optionPer * option.quantity
       const itemVal = parseInt(nutrition[key]) || 0
       nutrition = { ...nutrition, [key]: itemVal + optionVal }
     })
@@ -333,78 +393,59 @@ export const calcNutrition = (item) => {
   return nutrition
 }
 
-export const makeOrderItem = (
-  item,
-  isEdit,
-  soldOut = [],
-  simpleItem,
-  hasPoints = false
-) => {
-  const groups = makeOrderItemGroups(item.option_groups, isEdit, soldOut)
-  const cals = item.nutritional_info
-    ? parseInt(item.nutritional_info.calories)
-    : null
-  const orderItem = {
-    id: item.id,
-    name: item.name,
-    shortName: item.short_name,
-    category: item.category_name,
-    description: item.description,
-    shortDescription: item.short_description,
-    imageUrl: item.large_image_url,
-    slug: item.slug,
-    allergens: convertStringToArray(item.allergens),
-    tags: convertStringToArray(item.tags),
-    ingredients: item.ingredients,
-    nutritionalInfo: item.nutritional_info,
-    cals: isNaN(cals) ? null : cals,
-    groups: groups,
-    quantity: item.min_quantity || 1 * item.increment,
-    price: parseFloat(item.price),
-    increment: item.increment,
-    max: item.max_quantity,
-    min: item.min_quantity,
-    points: hasPoints ? item.points || null : null,
-    upsellItems: item.upsell_items || [],
-    similarItems: item.similar_items || [],
-  }
-  if (simpleItem) {
-    const { cart_guest_id, customer_id, made_for, notes } = simpleItem
-    if (cart_guest_id) orderItem.cart_guest_id = cart_guest_id
-    if (customer_id) orderItem.customer_id = customer_id
-    if (made_for) orderItem.madeFor = made_for
-    if (notes) orderItem.notes = notes
-  }
-  const pricedItem = calcPrices(orderItem)
-  // console.log(item.name, pricedItem.totalPrice)
-  return pricedItem
-}
-
 export const makeUpsellItems = (itemIds, itemLookup) => {
   return itemIds
     .map((id) => itemLookup[id])
     .filter((i) => i)
     .map((i) => makeOrderItem(i))
+    .filter((i) => !i.suspendUntil || i.suspendUntil < Date.now() / 1000)
     .filter((i) => {
       const belowMin = i.groups.filter((g) => !g.isSize && g.quantity < g.min)
       return belowMin.length === 0
     })
 }
 
+const makeSimpleGroupsLookup = (groups) => {
+  if (!groups || !groups.length) return null
+  return groups.reduce((grpObj, g) => {
+    const options = g.options.reduce((optObj, o) => {
+      optObj[o.id] = {
+        quantity: o.quantity,
+        groupsLookup: makeSimpleGroupsLookup(o.groups),
+      }
+      return optObj
+    }, {})
+    grpObj[g.id] = { ...g, options }
+    return grpObj
+  }, {})
+}
+
+const rehydrateGroups = (groups, groupsLookup) => {
+  if (!groupsLookup) return groups
+  groups.forEach((group) => {
+    const simpleGroup = groupsLookup[group.id]
+    if (simpleGroup) {
+      group.options.forEach((option) => {
+        const simpleOption = simpleGroup.options[option.id]
+        if (simpleOption) {
+          option.quantity = simpleOption.quantity
+          option.groups = rehydrateGroups(
+            option.groups,
+            simpleOption.groupsLookup
+          )
+        }
+      })
+    }
+  })
+  return groups
+}
+
 export const rehydrateOrderItem = (menuItem, simpleCartItem) => {
   const orderItem = makeOrderItem(menuItem, true, [], simpleCartItem)
   orderItem.quantity = simpleCartItem.quantity || 1
-  if (simpleCartItem.groups && simpleCartItem.groups.length) {
-    const groupsLookup = makeGroupsLookup(simpleCartItem)
-    orderItem.groups.forEach((group) => {
-      const simpleGroup = groupsLookup[group.id]
-      if (simpleGroup) {
-        group.options.forEach((option) => {
-          const simpleOption = simpleGroup.options[option.id]
-          option.quantity = simpleOption ? simpleOption.quantity : 0
-        })
-      }
-    })
+  const groupsLookup = makeSimpleGroupsLookup(simpleCartItem.groups)
+  if (groupsLookup) {
+    orderItem.groups = rehydrateGroups(orderItem.groups, groupsLookup)
   }
   const pricedItem = calcPrices(orderItem)
   return pricedItem
